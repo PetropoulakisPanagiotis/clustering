@@ -33,7 +33,7 @@ int main(int argc, char **argv){
     }
 
     /*  Create cluster method */
-    myCluster = new cluster(status, items, numClucsters, "random", "lloyd", "k-means", "euclidean");
+    myCluster = new cluster(status, items, numClucsters, "k-means++", "lloyd", "k-means", "euclidean");
 
     /* Find clusters */
     myCluster->fit(status);
@@ -43,7 +43,7 @@ int main(int argc, char **argv){
     }
 
     /* Find silhouette of cluster*/
-    silhouette = myCluster->getSilhouette(status);
+    //silhouette = myCluster->getSilhouette(status);
     if(status != SUCCESS){
         printError(status);
         return 0;

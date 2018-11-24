@@ -4,9 +4,8 @@
 #include "../item/item.h"
 #include "../utils/utils.h"
 
-/* Distances */
-double distCosine(Item& x, Item& y, errorCode& status);
-double distEuclidean(Item& x, Item& y, errorCode& status);
+        double distCosine(Item& x, Item& y, errorCode& status);
+        double distEuclidean(Item& x, Item& y, errorCode& status);
 
 /* Class cluster                */
 /* Provided algorithms:         */
@@ -43,6 +42,7 @@ class cluster{
         void kmeans(errorCode& status);
 
         /* Helpers functions */
+        int myUpperBound(std::vector<std::vector<double> >& x, double val, errorCode& status);
         double findItemAvgDist(int itemPos, int itemClusterPos, std::vector<std::vector<double> >& calculatedDistances, errorCode& status);
 
     public:

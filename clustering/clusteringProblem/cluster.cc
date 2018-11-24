@@ -134,6 +134,14 @@ void cluster::fit(errorCode& status){
 
     if(initAlgo == "random")
         this->randomInit();
+    else if(initAlgo == "k-means++")
+        this->kmeansPlusInit(status);
+ 
+        for(int i = 0; i < this->numClusters; i++)
+            this->clusters[i].getId();
+    /* Error occured */
+    if(status != SUCCESS)
+        return;
 
     /* Perform clustering                             */
     /* Max iter: Is the strongest terminate condition */
@@ -153,6 +161,7 @@ void cluster::fit(errorCode& status){
         /* Clusters have been determined */
         if(terminate == 1)
             break;
+
 
         /////////////////////////////
         /* Select update algorithm */

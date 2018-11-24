@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include <random>
 #include <bitset>
 #include <chrono>

@@ -1,5 +1,5 @@
 #pragma once
-
+#include <vector>
 /* Set limits */
 #define MAX_DIM 20000 // Max dimension
 #define MAX_K 70 // Max number of sub hash functions
@@ -76,4 +76,5 @@ int hammingDistance(int x, int y);
 
 /* Print message of given error */
 void printError(errorCode& status);
+
 // Petropoulakis Panagiotis

@@ -4,27 +4,11 @@
 #include <unordered_set>
 #include <random>
 #include <chrono>
-#include <algorithm>
 #include "../utils/utils.h"
 #include "cluster.h"
 
 using namespace std;
 
-///////////////
-/* Distances */
-///////////////
-
-double distCosine(Item& x, Item& y, errorCode& status){
-    status = SUCCESS;
-
-    return x.cosineDist(y, status);
-}
-
-double distEuclidean(Item& x, Item& y, errorCode& status){
-    status = SUCCESS;
-
-    return x.euclideanDist(y, status);
-}
 
 ////////////////////
 /* Init functions */
@@ -76,105 +60,112 @@ void cluster::kmeansPlusInit(errorCode& status){
     unordered_set<int>::iterator iterVisited;
 
     /* Set distribution */
-    static uniform_int_distribution<int> uniformDist(0, this->n);
-   
-    int clusterPos, itemPos, i, newClusterPos;
-    double currDist, minDist, tmpDouble, randomDouble;
-    
+    uniform_int_distribution<int> uniformDist(0, this->n);
+
+    int clusterPos = 0, itemPos = 0, newClusterPos = 0;
+    double currDist = 0, minDist = 0, tmpDouble = 0, randomDouble = 0;
+
     /* Keep distances between items and minimum cluster */
-    vector<double> minCalculatedDistances; 
-	vector<double>::iterator iterDouble;   
- 
+    vector<double> minCalculatedDistances;
+
     /* Pick initial cluster */
     itemPos = uniformDist(generator);
-    this->clusters.push_back(this->items[itemPos]); 
+    this->clusters.push_back(this->items[itemPos]);
 
 	/* Fix visited */
     visited.insert(itemPos);
 
-    /* Find initial distances: first cluster and items */
+    /* Find initial distances: dist(item, initial cluster) */
     for(itemPos = 0; itemPos < this->n; itemPos++){
+
         /* Find dist */
         currDist = this->distFunc(this->items[itemPos], this->clusters[0], status);
         if(status != SUCCESS)
             return;
+
+        /* Add distances as min */
         minCalculatedDistances.push_back(currDist);
     } // End for items
-                                                                     
+
     /* Pick remaining clusters */
     for(clusterPos = 1; clusterPos < this->numClusters; clusterPos++){
 
-        /* List of partial sums - Reset */
-        vector<double> partialSums;
-        
+        /* Vector of partial sums - Reset                      */
+        /* Each cell contains current partial sum and item pos */
+        vector<vector<double> > partialSums;
+
+        for(int i = 0; i < this->n + 1; i++)
+            partialSums.push_back(vector<double>());
+
         /* Add zero */
-        partialSums.push_back(0);
-        
-        /* For every item find min cluster and calculate dist(item,minCluster)^2 */
+        partialSums[0].push_back(0); // Dist
+        partialSums[0].push_back(0); // Pos
+
+        /* For every item find min cluster, calculate dist(item,minCluster)^2 and fix current partial sum*/
         for(itemPos = 0; itemPos < this->n; itemPos++){
-	
+
 			/* Discard clusters */
     	    iterVisited = visited.find(itemPos);
-	
+
+            /* Item is a cluster */
     	    if(iterVisited != visited.end()){
-				partialSums.push_back(*partialSums.end()); // Add previous partial sum
-				continue;	
+				partialSums[itemPos + 1].push_back(partialSums[itemPos][0]); // Add previous partial sum
+				partialSums[itemPos + 1].push_back(partialSums[itemPos][1]); // Add previous pos
 			}
-			
-			/* Set as initial min distance the previous one */
-			minDist = minCalculatedDistances[itemPos];
-	
-			/* Find new minimum distance between clusters and current item */
-			for(i = 1; i < clusterPos; i++){
-		        /* Find distance for current cluster */
-        		currDist = this->distFunc(this->items[itemPos], this->clusters[i], status);
-        		if(status != SUCCESS)
-            		return;
+            else{
+                /* Set as initial min distance as the previous one */
+                minDist = minCalculatedDistances[itemPos];
 
-				/* Set min distance */
-				if(currDist < minDist)
-					minDist = currDist;
-			} // End for find min cluster 
-			
-			/* Set new min distances */
-			minCalculatedDistances[itemPos] = minDist;
-	
-			/* Set partialSums */
+                /* Check if previous cluster is closer to the current item */
+                if(clusterPos != 1){
+                    /* Find distance form previous cluster */
+                    currDist = this->distFunc(this->items[itemPos], this->clusters[clusterPos - 1], status);
+                    if(status != SUCCESS)
+                        return;
 
-			/* Find: D(i)^2 */			
-			tmpDouble = myMultDouble(minDist, minDist, status);
-        	if(status != SUCCESS)
-            	return;
+                    /* Set min distance */
+                    if(currDist < minDist){
+                        minDist = currDist;
 
-			/* Find current partial sum - add previous partial sum with current */
-			tmpDouble = mySumDouble(tmpDouble, partialSums[itemPos], status);
-   	       	if(status != SUCCESS)
-            	return; 
-			
-			partialSums.push_back(tmpDouble);		
+                        /* Set new min distance */
+                        minCalculatedDistances[itemPos] = minDist;
+                    }
+                } // End if - Find new min cluster
+
+                //////////////////////
+                /* Set partial sums */
+                //////////////////////
+
+                /* Find: D(i)^2 */
+                tmpDouble = myMultDouble(minDist, minDist, status);
+                if(status != SUCCESS)
+                    return;
+
+                /* Find current partial sum - add previous partial sum with current */
+                tmpDouble = mySumDouble(tmpDouble, partialSums[itemPos][0], status);
+                if(status != SUCCESS)
+                    return;
+
+                /* Fix partial sums */
+                partialSums[itemPos + 1].push_back(tmpDouble); // Add partial sum
+                partialSums[itemPos + 1].push_back(partialSums[itemPos][1] + 1); // Add new pos
+            } // End if - item is not a cluster
         } // End for items
 
 		/* Pick a random value between [0-p(n-t)] */
-    	uniform_real_distribution<double> uniformDist1(0, *partialSums.end());
+    	uniform_real_distribution<double> uniformDist1(0, partialSums[this->n][0]);
 
-		/* Perform binary search and pick new cluster */
-		while(1){
-			
-			/* Find random double */
-			randomDouble = uniformDist1(generator);
+	    /* Find random double */
+        randomDouble = uniformDist1(generator);
 
-			/* Find position on new cluster */
-			iterDouble = upper_bound(partialSums.begin(), partialSums.end(), randomDouble);
-			newClusterPos = *iterDouble;
+        /* Find position on new cluster */
+        newClusterPos = myUpperBound(partialSums, randomDouble, status);
+        if(status != SUCCESS)
+            return;
 
-			/* Discard same clusters */
-    	    iterVisited = visited.find(newClusterPos);
-
-			/* Cluster has not been selected - pick this cluster */	
-    	    if(iterVisited == visited.end()){
-				break;	
-			}
-		} // End while
+        /* Add new cluster and fix visited */
+        this->clusters.push_back(this->items[newClusterPos]);
+        iterVisited = visited.find(newClusterPos);
     } // End for remaining clusters 
 }
 
