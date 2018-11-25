@@ -221,11 +221,14 @@ int cluster::lloydAssign(errorCode& status){
     } // End for - items
 
     /* Check terminate conditions */
-    if(this->objVal == newObjVal)
+    if(this->currStateVal == newObjVal)
         return 1;
 
+    cout << "prev: " << this->currStateVal << "\n";
+    cout << "new: " << newObjVal << "\n\n";
+
     /* Set prevObjVal */
-    this->objVal = newObjVal;
+    this->currStateVal = newObjVal;
 
     return 0;
 }
@@ -293,6 +296,5 @@ void cluster::kmeans(errorCode& status){
         } // End for components
     } // End for clusters
 }
-
 
 // Petropoulakis Panagiotis

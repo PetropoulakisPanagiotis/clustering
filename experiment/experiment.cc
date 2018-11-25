@@ -1,6 +1,6 @@
 #include <iostream>
 #include <list>
-#include "../clustering/clusteringProblem/cluster.h"
+#include <chrono>
 #include "../clustering/item/item.h"
 #include "../clustering/fileHandler/fileHandler.h"
 #include "../clustering/utils/utils.h"
@@ -9,13 +9,12 @@
 using namespace std;
 
 int main(int argc, char **argv){
-    cluster* myCluster; // Cluster method
-    int numClucsters = 4;
+    int numClucsters;
     char delim = ',';
     list<Item> items; // Items in given data set
     int argumentsProvided;
     string inputFile, confFile, outputFile, metrice;
-    double silhouette = 0;
+    string initAlgo, assignAlgo, updateAlgo;
     errorCode status;
 
     /* Read and check arguments */
@@ -25,33 +24,37 @@ int main(int argc, char **argv){
         return 0;
     }
 
+    chrono::steady_clock::time_point beginTimer, endTimer; // Measure time
+
+    cout << "Welcome to clustering problem\n";
+    cout << "-----------------------------\n\n";
+
+    cout << "Cluster:$ Reading data set\n";
+
     /* Read data set */
+    beginTimer = chrono::steady_clock::now();
     readDataSet(inputFile, 1, delim, items, status);
     if(status != SUCCESS){
         printError(status);
         return 0;
     }
+    endTimer = chrono::steady_clock::now();
+
+    /* Print time */
+    cout << "Cluster:$ Items have been determined[in: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << " sec]\n\n";
+
 
     /*  Create cluster method */
-    myCluster = new cluster(status, items, numClucsters, "k-means++", "lloyd", "k-means", "euclidean");
+    initAlgo = "k-means";
+    assignAlgo = "lloyd";
+    updateAlgo = "k-means";
+    metrice = "euclidean";
+    numClucsters = 4;
 
-    /* Find clusters */
-    myCluster->fit(status);
-    if(status != SUCCESS){
-        printError(status);
-        return 0;
-    }
+    /* Perform clustering */
+    runModel(items, outputFile, initAlgo, assignAlgo, updateAlgo, metrice, numClucsters);
 
-    /* Find silhouette of cluster*/
-    //silhouette = myCluster->getSilhouette(status);
-    if(status != SUCCESS){
-        printError(status);
-        return 0;
-    }
-
-    cout << silhouette << "\n";
-
-    delete myCluster;
+    cout << "--Expirement is over. Have a good day!--\n";
 
     return 0;
 }

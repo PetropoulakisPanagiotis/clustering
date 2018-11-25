@@ -58,7 +58,7 @@ cluster::cluster(errorCode& status, list<Item>& items, int numClusters, string i
     list<Item>::iterator iter = items.begin();
     int i;
 
-    this->objVal = -1;
+    this->currStateVal = 0;
 
     /* Set distance function */
     if(metrice == "euclidean")
@@ -136,9 +136,7 @@ void cluster::fit(errorCode& status){
         this->randomInit();
     else if(initAlgo == "k-means++")
         this->kmeansPlusInit(status);
- 
-        for(int i = 0; i < this->numClusters; i++)
-            this->clusters[i].getId();
+
     /* Error occured */
     if(status != SUCCESS)
         return;
@@ -177,6 +175,7 @@ void cluster::fit(errorCode& status){
 
     /* Map clusters with items for fast calculations */
     for(itemPos = 0; itemPos < this->n; itemPos++){
+        cout << this->itemsClusters[itemPos] << "\n";
         this->clustersItems[this->itemsClusters[itemPos]].push_back(itemPos);
     } // End for items
 
@@ -219,11 +218,11 @@ double cluster::getSilhouette(errorCode& status){
     /* Initialize calculated distances */
     for(itemDistancesPos = 0; itemDistancesPos < this->n; itemDistancesPos++){
         calculatedDistances.push_back(vector<double>(this->n));
-
-        for(itemCurrentDistancePos = 0; itemCurrentDistancePos < this->n; itemCurrentDistancePos++){
-            calculatedDistances[itemDistancesPos].push_back(-1);
-        }
     } // End for
+
+    for(itemCurrentDistancePos = 0; itemCurrentDistancePos < this->; itemCurrentDistancePos++){
+            calculatedDistances[itemDistancesPos].push_back(-1);
+    }
 
     /* Reset silhouette */
     this->silhouette = 0;

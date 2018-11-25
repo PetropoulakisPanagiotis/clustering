@@ -108,7 +108,7 @@ double cluster::findItemAvgDist(int itemPos, int itemClusterPos, vector<vector<d
     } // End for items in cluster
 
     /* Fix result */
-    result = myDivDouble(result, this->clustersItems[itemClusterPos].size(), status);
+    result = myDivDouble(result, this->clustersItems[itemClusterPos].size() - 1, status);
     if(status != SUCCESS)
             return -1;
 

@@ -23,7 +23,7 @@ class cluster{
         int dim;
         int numClusters;
         int maxIter;
-        int objVal; // Objective value
+        double currStateVal; // Evaluate current state of cluster. Prev states represents objective value of something else 
         double silhouette; // Evaluate clustering
         int fitted; // 1: items fitted, 2: clusters have been determined
         std::string initAlgo; // Init algorithm to be performed
