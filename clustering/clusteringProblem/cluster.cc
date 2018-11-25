@@ -228,6 +228,7 @@ double cluster::getSilhouette(errorCode& status){
 
     /* Scan all items */
     for(itemPos = 0; itemPos < this->n; itemPos++){
+        cout << itemPos << "\n";
 
         /* Resets */
         a = 0;
@@ -279,7 +280,6 @@ double cluster::getSilhouette(errorCode& status){
             tmpDouble /=  a;
         else
             tmpDouble /=  b;
-
 
         this->silhouette += tmpDouble;
     } // End for items
