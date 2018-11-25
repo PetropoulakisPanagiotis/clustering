@@ -158,7 +158,7 @@ void cluster::fit(errorCode& status){
 
         /* Clusters have been determined */
         if(terminate == 1)
-            break;
+           break;
 
 
         /////////////////////////////
@@ -173,9 +173,8 @@ void cluster::fit(errorCode& status){
             return;
     } // End while
 
-    /* Map clusters with items for fast calculations */
+    /* Map clusters with items for fast calculations(silhouette etc.) */
     for(itemPos = 0; itemPos < this->n; itemPos++){
-        cout << this->itemsClusters[itemPos] << "\n";
         this->clustersItems[this->itemsClusters[itemPos]].push_back(itemPos);
     } // End for items
 
@@ -217,12 +216,12 @@ double cluster::getSilhouette(errorCode& status){
 
     /* Initialize calculated distances */
     for(itemDistancesPos = 0; itemDistancesPos < this->n; itemDistancesPos++){
-        calculatedDistances.push_back(vector<double>(this->n));
-    } // End for
+        calculatedDistances.push_back(vector<double>());
 
-    for(itemCurrentDistancePos = 0; itemCurrentDistancePos < this->; itemCurrentDistancePos++){
+        for(itemCurrentDistancePos = 0; itemCurrentDistancePos < this->n; itemCurrentDistancePos++){
             calculatedDistances[itemDistancesPos].push_back(-1);
-    }
+        }
+    } // End for
 
     /* Reset silhouette */
     this->silhouette = 0;
@@ -274,31 +273,19 @@ double cluster::getSilhouette(errorCode& status){
         ////////////////////
         /* Fix silhouette */
         ////////////////////
-        tmpDouble = mySubDouble(b, a, status);
-        if(status != SUCCESS)
-                return -1;
+        tmpDouble = b - a;
 
-        if(a > b){
-            tmpDouble = myDivDouble(tmpDouble, a, status); 
-            if(status != SUCCESS)
-                return -1;
-        }
-        else{
-            tmpDouble = myDivDouble(tmpDouble, b, status); 
-            if(status != SUCCESS)
-                return -1;
-        }
+        if(a > b)
+            tmpDouble /=  a;
+        else
+            tmpDouble /=  b;
 
-        this->silhouette = mySumDouble(this->silhouette, tmpDouble, status);
-        if(status != SUCCESS)
-            return -1;
 
+        this->silhouette += tmpDouble;
     } // End for items
 
     /* Fix average silhouette */
-    this->silhouette = myDivDouble(this->silhouette, this->n, status);
-    if(status != SUCCESS)
-        return -1;
+    this->silhouette /= this->n;
 
     return this->silhouette;
 }

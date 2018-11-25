@@ -137,14 +137,10 @@ void cluster::kmeansPlusInit(errorCode& status){
                 //////////////////////
 
                 /* Find: D(i)^2 */
-                tmpDouble = myMultDouble(minDist, minDist, status);
-                if(status != SUCCESS)
-                    return;
+                tmpDouble = minDist * minDist;
 
                 /* Find current partial sum - add previous partial sum with current */
-                tmpDouble = mySumDouble(tmpDouble, partialSums[itemPos][0], status);
-                if(status != SUCCESS)
-                    return;
+                tmpDouble += partialSums[itemPos][0];
 
                 /* Fix partial sums */
                 partialSums[itemPos + 1].push_back(tmpDouble); // Add partial sum
@@ -194,7 +190,7 @@ int cluster::lloydAssign(errorCode& status){
             /* Find current distance */
             currDist = this->distFunc(this->items[itemPos], this->clusters[clusterPos], status);
             if(status != SUCCESS)
-                    return -1;
+                return -1;
 
             /* Set min dist */
             if(clusterPos == 0){
@@ -208,13 +204,9 @@ int cluster::lloydAssign(errorCode& status){
         } // End for - clusters
 
         /* Calculate objective function */
-        tmpObjVal = myMultDouble(minDist, minDist, status);
-        if(status != SUCCESS)
-            return -1;
+        tmpObjVal = minDist * minDist;
 
-        newObjVal = mySumDouble(tmpObjVal, newObjVal, status);
-        if(status != SUCCESS)
-            return -1;
+        newObjVal += tmpObjVal;
 
         /* Assign item to cluster */
         this->itemsClusters[itemPos] = minClusterPos;

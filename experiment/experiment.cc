@@ -45,7 +45,7 @@ int main(int argc, char **argv){
 
 
     /*  Create cluster method */
-    initAlgo = "k-means";
+    initAlgo = "random";
     assignAlgo = "lloyd";
     updateAlgo = "k-means";
     metrice = "euclidean";

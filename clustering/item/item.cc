@@ -171,7 +171,7 @@ void Item::sumComponent(double newComponent, int index, errorCode& status){
     if(index < 0 || index >= this->dim)
         status = INVALID_INDEX;
     else
-        this->components[index] = mySumDouble(this->components[index], newComponent, status);
+        this->components[index] +=  newComponent;
 }
 
 /* Sum given component with i-component */
@@ -182,7 +182,7 @@ void Item::divComponent(double newComponent, int index, errorCode& status){
     if(index < 0 || index >= this->dim)
         status = INVALID_INDEX;
     else
-        this->components[index] = myDivDouble(this->components[index], newComponent, status);
+        this->components[index] /= newComponent;
 }
 
 
@@ -259,7 +259,7 @@ int Item::compare(Item& x, errorCode& status){
         status = INVALID_DIM;
         return -1;
     }
-    
+ 
     if(this->dim != x.dim){
         status = INVALID_DIM;
         return -1;
@@ -291,13 +291,9 @@ double Item::innerProduct(Item& x, errorCode& status){
 
     /* Calculate product */
     for(i = 0; i < this->dim; i++){
-        tempMult= myMultDouble(this->components[i], x.components[i],status);
-        if(status != SUCCESS)
-            return -1;
+        tempMult = this->components[i] * x.components[i];
 
-        product = mySumDouble(tempMult, product, status);
-        if(status != SUCCESS)
-            return -1;
+        product += tempMult;
     } // End for
 
     return product;
@@ -318,13 +314,9 @@ double Item::norm(errorCode& status){
 
     /* Calculate norm */
     for(i = 0; i < this->dim; i++){
-        tempMult= myMultDouble(this->components[i], this->components[i],status);
-        if(status != SUCCESS)
-            return -1;
+        tempMult = this->components[i] * this->components[i];
 
-        norm = mySumDouble(tempMult, norm, status);
-        if(status != SUCCESS)
-            return -1;
+        norm += tempMult;
     } // End for
 
     norm = sqrt(norm);
@@ -355,22 +347,15 @@ double Item::euclideanDist(Item& x, errorCode& status){
 
     /* Calculate distance */
     for(i = 0; i < this->dim; i++){
-        newComponent = mySubDouble(this->components[i], x.components[i], status);
-        if(status != SUCCESS)
-            return -1;
+        newComponent = this->components[i] + x.components[i];
 
+        tempMult = newComponent * newComponent;
 
-        tempMult= myMultDouble(newComponent, newComponent, status);
-        if(status != SUCCESS)
-            return -1;
-
-        dist = mySumDouble(dist, tempMult, status);
-        if(status != SUCCESS)
-            return -1;
+        dist += tempMult;
     } // End for
 
     dist = sqrt(dist);
- 
+
     return dist;
 }
 
@@ -404,13 +389,9 @@ double Item::cosineDist(Item& x, errorCode& status){
     if(status != SUCCESS)
         return -1;
 
-    mult = myMultDouble(normX, normY, status);
-    if(status != SUCCESS)
-        return -1;
+    mult = normX * normY;
 
-    dist = myDivDouble(dist, mult, status);
-    if(status != SUCCESS)
-        return -1;
+    dist = dist /  mult;
 
     dist = 1 - dist;
 
