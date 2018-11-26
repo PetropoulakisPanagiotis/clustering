@@ -14,14 +14,14 @@ int main(int argc, char **argv){
     int numClucsters;
     char delim = ',';
     list<Item> items; // Items in given data set
-    int argumentsProvided, returnVal;
+    int argumentsProvided, returnVal, complete; // Complete: for complete print
     string inputFile, confFile, outputFile, metrice;
     string initAlgo, assignAlgo, updateAlgo;
-    fstream outputStream;
+    ofstream outputStream;
     errorCode status;
 
     /* Read and check arguments */
-    argumentsProvided = readArguments(argc, argv, inputFile, confFile, outputFile, metrice);
+    argumentsProvided = readArguments(argc, argv, inputFile, confFile, outputFile, complete, metrice);
     if(argumentsProvided != 0){
         cout << "Please give valid arguments. Try again later\n";
         return 0;
@@ -46,6 +46,7 @@ int main(int argc, char **argv){
     /* Print time */
     cout << "Cluster:$ Items have been determined[in: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << " sec]\n\n";
 
+    cout << outputFile << "\n";
     /* Open output file */
     outputStream.open(outputFile, ios::trunc);
     if(!outputStream){
@@ -76,7 +77,7 @@ int main(int argc, char **argv){
     cout << "Cluster:$ Model created[in: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << " sec]\n\n";
 
     /* Perform clustering */
-    returnVal = runModel(myCluster, outputStream, initAlgo, assignAlgo, updateAlgo, metrice, numClucsters);
+    returnVal = runModel(myCluster, items, complete, outputStream, initAlgo, assignAlgo, updateAlgo, metrice, numClucsters);
     if(returnVal == -1){
         outputStream.close();
         delete myCluster;
@@ -87,6 +88,7 @@ int main(int argc, char **argv){
     delete myCluster;
 
     cout << "--Expirement is over. Have a good day!--\n";
+    outputStream.close();
 
     return 0;
 }

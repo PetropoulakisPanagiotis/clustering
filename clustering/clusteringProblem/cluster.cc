@@ -306,17 +306,11 @@ void cluster::getSilhouette(vector<double>& silhouetteArray, errorCode& status){
     silhouetteArray[this->numClusters] /= this->n;
 }
 
-/* Get indexes of items for given cluster */
-void cluster::getItemsCluster(std::vector<int>& itemsPos, int numCluster, errorCode& status){
-    list<int>::iterator iter;
+/* Get index of cluster for items */
+void cluster::getItemsCluster(list<int>& itemsPos, errorCode& status){
+    int itemPos;
 
     status = SUCCESS;
-
-    /* Check parameters */
-    if(numClusters < 0 || numClusters >= this->numClusters){
-        status = INVALID_INDEX;
-        return;
-    }
 
     /* Check model */
     if(this->fitted == -1){
@@ -332,7 +326,7 @@ void cluster::getItemsCluster(std::vector<int>& itemsPos, int numCluster, errorC
 
     items.clear();
 
-    for(iter = this->clustersItems[numCluster].begin(); iter != this->clustersItems[numCluster].end(); iter++)
-        itemsPos.push_back(*iter);
+    for(itemPos = 0; itemPos < this->n; itemPos++)
+        itemsPos.push_back(this->itemsClusters[itemPos]);
 }
 // Petropoulakis Panagiotis

@@ -51,8 +51,8 @@ class cluster{
         /* Get silhouette */
         void getSilhouette(std::vector<double>& silhouetteList, errorCode& status);
 
-        /* Get items of given cluster */
-        void getItemsCluster(std::vector<int>& itemsPos, int clusterPos, errorCode& status);
+        /* Map items with it's cluster */
+        void getItemsCluster(std::list<int>& itemsPos, errorCode& status);
 };
 
 // Petropoulakis Panagiotis
