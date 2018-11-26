@@ -108,9 +108,9 @@ cluster::cluster(errorCode& status, list<Item>& items, int numClusters, string i
 }
 
 /* Compute clustering */
-void cluster::fit(errorCode& status){
+void cluster::fit(vector<Item>& clusters, vector<int>& clustersSize, errorCode& status){
     int step;
-    int terminate, itemPos;
+    int terminate, itemPos, clusterPos;
 
     status = SUCCESS;
 
@@ -124,6 +124,11 @@ void cluster::fit(errorCode& status){
         status = METHOD_ALREADY_USED;
         return;
     }
+
+
+    /* Clear vectors */
+    clusters.clear();
+    clustersSize.clear();
 
     ///////////////////////////
     /* Select init algorithm */
@@ -176,6 +181,12 @@ void cluster::fit(errorCode& status){
     for(itemPos = 0; itemPos < this->n; itemPos++){
         this->clustersItems[this->itemsClusters[itemPos]].push_back(itemPos);
     } // End for items
+
+    /* Set parameters */
+    for(clusterPos = 0; clusterPos < this->numClusters; clusterPos++){
+        clusters.push_back(this->clusters[clusterPos]);
+        clustersSize.push_back(this->clustersItems[clusterPos].size());
+    }
 
     /* Success */
     this->fitted = 1;
@@ -293,5 +304,35 @@ void cluster::getSilhouette(vector<double>& silhouetteArray, errorCode& status){
 
     /* Fix overall silhouette */
     silhouetteArray[this->numClusters] /= this->n;
+}
+
+/* Get indexes of items for given cluster */
+void cluster::getItemsCluster(std::vector<int>& itemsPos, int numCluster, errorCode& status){
+    list<int>::iterator iter;
+
+    status = SUCCESS;
+
+    /* Check parameters */
+    if(numClusters < 0 || numClusters >= this->numClusters){
+        status = INVALID_INDEX;
+        return;
+    }
+
+    /* Check model */
+    if(this->fitted == -1){
+        status = INVALID_METHOD;
+        return;
+    }
+
+    if(this->fitted == 0){
+        status = METHOD_UNFITTED;
+        return;
+    }
+
+
+    items.clear();
+
+    for(iter = this->clustersItems[numCluster].begin(); iter != this->clustersItems[numCluster].end(); iter++)
+        itemsPos.push_back(*iter);
 }
 // Petropoulakis Panagiotis

@@ -8,5 +8,5 @@
 int readArguments(int argc, char **argv, std::string& inputFile, std::string& confFile, std::string& outputFile, std::string& metrice);
 
 /* Run model */
-void runModel(cluster* myCluster, fstream& outputFile, std::string& initAlgo, std::string& assignAlgo, std::string& updateAlgo, std::string& metrice, int numClucsters);
+int runModel(cluster* myCluster, std::fstream& outputFile, std::string& initAlgo, std::string& assignAlgo, std::string& updateAlgo, std::string& metrice, int numClucsters);
 // Petropoulakis Panagiotis

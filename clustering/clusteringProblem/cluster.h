@@ -46,10 +46,13 @@ class cluster{
         cluster(errorCode& status, std::list<Item>& items, int numClusters=5, std::string initAlgo="random", std::string assignAlgo="lloyd", std::string updateAlgo="k-means", std::string metrice="euclidean", int maxIter=300);
 
         /* Compute clustering */
-        void fit(errorCode& status);
+        void fit(std::vector<Item>& clusters, std::vector<int>& clustersSize, errorCode& status);
 
         /* Get silhouette */
         void getSilhouette(std::vector<double>& silhouetteList, errorCode& status);
+
+        /* Get items of given cluster */
+        void getItemsCluster(std::vector<int>& itemsPos, int clusterPos, errorCode& status);
 };
 
 // Petropoulakis Panagiotis

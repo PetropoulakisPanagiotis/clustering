@@ -14,7 +14,7 @@ int main(int argc, char **argv){
     int numClucsters;
     char delim = ',';
     list<Item> items; // Items in given data set
-    int argumentsProvided;
+    int argumentsProvided, returnVal;
     string inputFile, confFile, outputFile, metrice;
     string initAlgo, assignAlgo, updateAlgo;
     fstream outputStream;
@@ -65,6 +65,9 @@ int main(int argc, char **argv){
 
     cout << "Cluster:$ Creating model[" << initAlgo << "/" << assignAlgo << "/" << updateAlgo << "/" << metrice << "]\n\n";
 
+    outputStream << "Algorithm: " << initAlgo << "/" << assignAlgo << "/" << updateAlgo << "\n";
+    outputStream << "Metric: " << metrice << "\n";
+
     beginTimer = chrono::steady_clock::now();
     myCluster = new cluster(status, items, numClucsters, initAlgo, assignAlgo, updateAlgo, metrice);
     endTimer = chrono::steady_clock::now();
@@ -73,13 +76,15 @@ int main(int argc, char **argv){
     cout << "Cluster:$ Model created[in: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << " sec]\n\n";
 
     /* Perform clustering */
-    runModel(myCluster, outputStream, initAlgo, assignAlgo, updateAlgo, metrice, numClucsters);
+    returnVal = runModel(myCluster, outputStream, initAlgo, assignAlgo, updateAlgo, metrice, numClucsters);
+    if(returnVal == -1){
+        outputStream.close();
+        delete myCluster;
+        return 0;
+    }
 
     cout << "Cluster:$ Deleting cluster\n\n";
     delete myCluster;
-
-
-
 
     cout << "--Expirement is over. Have a good day!--\n";
 

@@ -34,27 +34,55 @@ int readArguments(int argc, char **argv,string& inputFile, string& confFile, str
 
 /* Create and run clustering model based on parameters */
 /* Print results in output file                        */
-void runModel(cluster* myCluster, fstream& outputFile, string& initAlgo, string& assignAlgo, string& updateAlgo, string& metrice, int numClucsters){
+/* Success: 0                                          */
+/* Failure: -1                                         */
+int runModel(cluster* myCluster, fstream& outputStream, string& initAlgo, string& assignAlgo, string& updateAlgo, string& metrice, int numClucsters){
     vector<double> silhouetteArray;
+    vector<Item> clusters;
+    vector<int> clustersSize;
     chrono::steady_clock::time_point beginTimer, endTimer; // Measure time
-    int i;
+    int i, j;
     errorCode status;
 
     cout << "Cluster:$ Fitting clusters\n\n";
 
     /* Find clusters */
     beginTimer = chrono::steady_clock::now();
-    myCluster->fit(status);
+    myCluster->fit(clusters, clustersSize, status);
     if(status != SUCCESS){
         printError(status);
-        delete myCluster;
-        return;
+        return -1;
     }
 
     endTimer = chrono::steady_clock::now();
 
     /* Print time */
     cout << "Cluster:$ Clusters have been determined[in: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << " sec]\n\n";
+
+
+    /* Print in file */
+    for(i = 0; i < (int)clusters.size(); i++){
+        if(updateAlgo == "pam-lloyd")
+            outputStream << "CLUSTER-" << i + 1 << " {size: " << clustersSize[i] << "," << " centroid: " << clusters[i].getId() << "\n";
+        else if(updateAlgo == "k-means"){
+            outputStream << "CLUSTER-" << i + 1 << " {size: " << clustersSize[i] << "," << " centroid: ";
+
+            outputStream << "[";
+            /* Print components of cluster */
+            for(j = 0; j < clusters[i].getDim(); j++){
+                outputStream << clusters[i].getComponent(j, status);
+                if(status != SUCCESS){
+                    printError(status);
+                    return -1;
+                }
+
+                if(j != clusters[i].getDim() - 1)
+                    outputStream << ",";
+                else
+                    outputStream << "] }\n";
+            } // End for components
+        }
+    } // End for clusters
 
     cout << "Cluster:$ Calculating silhouette\n\n";
 
@@ -63,8 +91,7 @@ void runModel(cluster* myCluster, fstream& outputFile, string& initAlgo, string&
     myCluster->getSilhouette(silhouetteArray, status);
     if(status != SUCCESS){
         printError(status);
-        delete myCluster;
-        return;
+        return -1;
     }
 
     endTimer = chrono::steady_clock::now();
@@ -82,5 +109,7 @@ void runModel(cluster* myCluster, fstream& outputFile, string& initAlgo, string&
     } // End for
 
     cout << "] [in: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << " sec]\n\n";
+
+    return 0;
 };
 // Petropoulakis Panagiotis
