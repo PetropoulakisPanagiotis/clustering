@@ -6,22 +6,6 @@
 
 using namespace std;
 
-///////////////
-/* Distances */
-///////////////
-
-double distCosine(Item& x, Item& y, errorCode& status){
-    status = SUCCESS;
-
-    return x.cosineDist(y, status);
-}
-
-double distEuclidean(Item& x, Item& y, errorCode& status){
-    status = SUCCESS;
-
-    return x.euclideanDist(y, status);
-}
-
 /* Perform upper bound algorithm like stl's algorithms. Return index of given value */
 /* Given vector must be sorted                                                      */
 /* Form of vector: [[0, pos], [val2, pos2], ...., [valn, posn]                      */

@@ -4,9 +4,6 @@
 #include "../item/item.h"
 #include "../utils/utils.h"
 
-        double distCosine(Item& x, Item& y, errorCode& status);
-        double distEuclidean(Item& x, Item& y, errorCode& status);
-
 /* Class cluster                */
 /* Provided algorithms:         */
 /* Init: random/k-means++       */
@@ -24,7 +21,6 @@ class cluster{
         int numClusters;
         int maxIter;
         double currStateVal; // Evaluate current state of cluster. Prev states represents objective value of something else 
-        double silhouette; // Evaluate clustering
         int fitted; // 1: items fitted, 2: clusters have been determined
         std::string initAlgo; // Init algorithm to be performed
         std::string assignAlgo;
@@ -34,12 +30,13 @@ class cluster{
         /* Init functions */
         void randomInit(void);
         void kmeansPlusInit(errorCode& status);
-    
+
         /* Assigment functions */
         int lloydAssign(errorCode& status);
 
         /* Update functions */
         void kmeans(errorCode& status);
+        void pamLloyd(errorCode& status);
 
         /* Helpers functions */
         int myUpperBound(std::vector<std::vector<double> >& x, double val, errorCode& status);
@@ -52,7 +49,7 @@ class cluster{
         void fit(errorCode& status);
 
         /* Get silhouette */
-        double getSilhouette(errorCode& status);
+        void getSilhouette(std::vector<double>& silhouetteList, errorCode& status);
 };
 
 // Petropoulakis Panagiotis

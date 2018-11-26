@@ -397,4 +397,17 @@ double Item::cosineDist(Item& x, errorCode& status){
 
     return dist;
 }
+
+/* Static functions */
+double euclideanDistance(Item& x, Item& y, errorCode& status){
+    status = SUCCESS;
+
+    return x.euclideanDist(y, status);
+}
+
+double cosineDistance(Item& x, Item& y, errorCode& status){
+    status = SUCCESS;
+
+    return x.cosineDist(y, status);
+}
 // PetropoulakisPanagiotis

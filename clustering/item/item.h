@@ -51,5 +51,10 @@ class Item{
         /* Metrices */
         double euclideanDist(Item& x, errorCode& status);
         double cosineDist(Item& x,errorCode& status);
+
 };
+
+/* Generic distances */
+double euclideanDistance(Item& x, Item& y, errorCode& status);
+double cosineDistance(Item& x, Item& y, errorCode& status);
 // PetropoulakisPanagiotis

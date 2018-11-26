@@ -1,7 +1,9 @@
 #include <iostream>
 #include <string.h>
 #include <list>
+#include <vector>
 #include <chrono>
+#include <fstream>
 #include "helper.h"
 #include "../clustering/utils/utils.h"
 #include "../clustering/item/item.h"
@@ -32,21 +34,11 @@ int readArguments(int argc, char **argv,string& inputFile, string& confFile, str
 
 /* Create and run clustering model based on parameters */
 /* Print results in output file                        */
-void runModel(list<Item>& items, string& outputFile, string& initAlgo, string& assignAlgo, string& updateAlgo, string& metrice, int numClucsters){
-    cluster* myCluster; // Cluster method
-    double silhouette = 0;
+void runModel(cluster* myCluster, fstream& outputFile, string& initAlgo, string& assignAlgo, string& updateAlgo, string& metrice, int numClucsters){
+    vector<double> silhouetteArray;
     chrono::steady_clock::time_point beginTimer, endTimer; // Measure time
+    int i;
     errorCode status;
-
-    cout << "Cluster:$ Creating model[" << initAlgo << "/" << assignAlgo << "/" << updateAlgo << "/" << metrice << "]\n\n";
-
-    beginTimer = chrono::steady_clock::now();
-    myCluster = new cluster(status, items, numClucsters, initAlgo, assignAlgo, updateAlgo, metrice);
-    endTimer = chrono::steady_clock::now();
-
-    /* Print time */
-    cout << "Cluster:$ Model created[in: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << " sec]\n\n";
-
 
     cout << "Cluster:$ Fitting clusters\n\n";
 
@@ -64,11 +56,11 @@ void runModel(list<Item>& items, string& outputFile, string& initAlgo, string& a
     /* Print time */
     cout << "Cluster:$ Clusters have been determined[in: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << " sec]\n\n";
 
-    cout << "Cluster:$ Calculating overall silhouette\n\n";
+    cout << "Cluster:$ Calculating silhouette\n\n";
 
     /* Find silhouette of cluster*/
     beginTimer = chrono::steady_clock::now();
-    silhouette = myCluster->getSilhouette(status);
+    myCluster->getSilhouette(silhouetteArray, status);
     if(status != SUCCESS){
         printError(status);
         delete myCluster;
@@ -77,11 +69,18 @@ void runModel(list<Item>& items, string& outputFile, string& initAlgo, string& a
 
     endTimer = chrono::steady_clock::now();
 
-    cout << "Cluster:$ Overall silhouette is: " << silhouette << " [in: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << " sec]\n\n";
+    cout << "Cluster:$ Silhouette: [";
 
+    /* Print silhouette results */
+    for(i = 0; i < (int)silhouetteArray.size(); i++){
 
-    cout << "Cluster:$ Deleting cluster\n\n";
+        cout << silhouetteArray[i];
 
-    delete myCluster;
+        if(i != (int)silhouetteArray.size() - 1)
+            cout << ",";
+
+    } // End for
+
+    cout << "] [in: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << " sec]\n\n";
 };
 // Petropoulakis Panagiotis

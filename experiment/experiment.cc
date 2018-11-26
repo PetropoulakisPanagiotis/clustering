@@ -1,9 +1,11 @@
 #include <iostream>
 #include <list>
 #include <chrono>
+#include <fstream>
 #include "../clustering/item/item.h"
 #include "../clustering/fileHandler/fileHandler.h"
 #include "../clustering/utils/utils.h"
+#include "../clustering/clusteringProblem/cluster.h"
 #include "helper.h"
 
 using namespace std;
@@ -15,6 +17,7 @@ int main(int argc, char **argv){
     int argumentsProvided;
     string inputFile, confFile, outputFile, metrice;
     string initAlgo, assignAlgo, updateAlgo;
+    fstream outputStream;
     errorCode status;
 
     /* Read and check arguments */
@@ -43,6 +46,14 @@ int main(int argc, char **argv){
     /* Print time */
     cout << "Cluster:$ Items have been determined[in: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << " sec]\n\n";
 
+    /* Open output file */
+    outputStream.open(outputFile, ios::trunc);
+    if(!outputStream){
+        cout << "Can't open given output file\n";
+        return 0;
+    }
+
+    cluster* myCluster;
 
     /*  Create cluster method */
     initAlgo = "random";
@@ -51,8 +62,24 @@ int main(int argc, char **argv){
     metrice = "euclidean";
     numClucsters = 4;
 
+
+    cout << "Cluster:$ Creating model[" << initAlgo << "/" << assignAlgo << "/" << updateAlgo << "/" << metrice << "]\n\n";
+
+    beginTimer = chrono::steady_clock::now();
+    myCluster = new cluster(status, items, numClucsters, initAlgo, assignAlgo, updateAlgo, metrice);
+    endTimer = chrono::steady_clock::now();
+
+    /* Print time */
+    cout << "Cluster:$ Model created[in: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << " sec]\n\n";
+
     /* Perform clustering */
-    runModel(items, outputFile, initAlgo, assignAlgo, updateAlgo, metrice, numClucsters);
+    runModel(myCluster, outputStream, initAlgo, assignAlgo, updateAlgo, metrice, numClucsters);
+
+    cout << "Cluster:$ Deleting cluster\n\n";
+    delete myCluster;
+
+
+
 
     cout << "--Expirement is over. Have a good day!--\n";
 

@@ -36,7 +36,7 @@ cluster::cluster(errorCode& status, list<Item>& items, int numClusters, string i
         return;
     }
 
-    if(updateAlgo != "k-means" && updateAlgo != "pam"){
+    if(updateAlgo != "k-means" && updateAlgo != "pam-lloyd"){
         status = INVALID_ALGO;
         return;
     }
@@ -62,9 +62,9 @@ cluster::cluster(errorCode& status, list<Item>& items, int numClusters, string i
 
     /* Set distance function */
     if(metrice == "euclidean")
-        this->distFunc = &distEuclidean;
+        this->distFunc = &euclideanDistance;
     else
-        this->distFunc = &distCosine;
+        this->distFunc = &cosineDistance;
 
     /* Check dim */
     this->dim = iter->getDim();
@@ -79,9 +79,6 @@ cluster::cluster(errorCode& status, list<Item>& items, int numClusters, string i
         status = INVALID_POINTS;
         return;
     }
-
-    /* Initialize silhouette */
-    this->silhouette = this->n + 1;
 
     /* Fix vectors */
     this->items.reserve(this->n);
@@ -167,6 +164,8 @@ void cluster::fit(errorCode& status){
 
         if(this->updateAlgo == "k-means")
             kmeans(status);
+        else if(this->updateAlgo == "pam-lloyd")
+            pamLloyd(status);
 
         /* Error occured */
         if(status != SUCCESS)
@@ -183,10 +182,10 @@ void cluster::fit(errorCode& status){
 }
 
 /* Calculate average silhouette of cluster */
-double cluster::getSilhouette(errorCode& status){
+void cluster::getSilhouette(vector<double>& silhouetteArray, errorCode& status){
     list<int>::iterator iterClusterItems; // Iterate through indexes ofitems in each cluster
     vector<vector<double> > calculatedDistances; // Save visited distances
-    int itemDistancesPos, itemCurrentDistancePos; // Iterate through static vectors
+    int itemDistancesPos, itemCurrentDistancePos, i; // Iterate through static vectors
     int itemPos = 0, itemClusterPos = 0, clusterPos = 0, flag = 0, itemSecondClusterPos = 0;
     double a = 0, b = 0;
     double tmpDist = 0, minDist = 0, tmpDouble = 0;
@@ -196,19 +195,18 @@ double cluster::getSilhouette(errorCode& status){
     /* Check model */
     if(this->fitted == -1){
         status = INVALID_METHOD;
-        return -1;
+        return;
     }
 
     if(this->fitted == 0){
         status = METHOD_UNFITTED;
-        return -1;
+        return;
     }
 
-    //////////////////////////
-    /* Have been calculated */
-    //////////////////////////
-    if(this->silhouette != this->n + 1)
-        return this->silhouette;
+    /* Init and clear list */
+    silhouetteArray.clear();
+    for(i = 0; i < this->numClusters + 1; i++)
+        silhouetteArray.push_back(0);
 
     //////////////////////////
     /* Calculate silhouette */
@@ -223,12 +221,8 @@ double cluster::getSilhouette(errorCode& status){
         }
     } // End for
 
-    /* Reset silhouette */
-    this->silhouette = 0;
-
     /* Scan all items */
     for(itemPos = 0; itemPos < this->n; itemPos++){
-        cout << itemPos << "\n";
 
         /* Resets */
         a = 0;
@@ -248,7 +242,7 @@ double cluster::getSilhouette(errorCode& status){
             /* Find current distance */
             tmpDist = this->distFunc(this->items[itemPos], this->clusters[clusterPos], status);
             if(status != SUCCESS)
-                return -1;
+                return;
 
             if(flag == 0){
                 minDist = tmpDist;
@@ -264,12 +258,12 @@ double cluster::getSilhouette(errorCode& status){
         /* Find a - Average distance between current item and other items in the main cluster */
         a = this->findItemAvgDist(itemPos, itemClusterPos, calculatedDistances, status);
         if(status != SUCCESS)
-            return -1;
+            return;
 
         /* Find b - Average distance between current item and other items in the second best cluster */
         b = this->findItemAvgDist(itemPos, itemSecondClusterPos, calculatedDistances, status);
         if(status != SUCCESS)
-            return -1;
+            return;
 
         ////////////////////
         /* Fix silhouette */
@@ -281,12 +275,23 @@ double cluster::getSilhouette(errorCode& status){
         else
             tmpDouble /=  b;
 
-        this->silhouette += tmpDouble;
+        /* Add current s(itemPos) */
+        silhouetteArray[this->itemsClusters[itemPos]] += tmpDouble;
+
+        /* Fix overall silhouette */
+        silhouetteArray[this->numClusters] += tmpDouble;
     } // End for items
 
-    /* Fix average silhouette */
-    this->silhouette /= this->n;
+    int tmpSize;
 
-    return this->silhouette;
+    /* Fix silhouette for every cluster */
+    for(i = 0; i < this->numClusters; i++){
+        tmpSize = this->clustersItems[i].size();
+        if(tmpSize != 0)
+            silhouetteArray[i] /= this->clustersItems[i].size();
+    } // End for
+
+    /* Fix overall silhouette */
+    silhouetteArray[this->numClusters] /= this->n;
 }
 // Petropoulakis Panagiotis
