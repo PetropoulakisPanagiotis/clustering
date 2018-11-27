@@ -19,6 +19,17 @@ void cluster::kmeans(errorCode& status){
 
     status = SUCCESS;
 
+    /* Check model */
+    if(this->fitted == -1){
+        status = INVALID_METHOD;
+        return;
+    }
+
+    if(this->fitted == 1){
+        status = METHOD_ALREADY_USED;
+        return;
+    }
+
     /* Initialize vectors */
     for(clusterPos = 0; clusterPos < this->numClusters; clusterPos++){
         flags.push_back(0);
@@ -40,7 +51,7 @@ void cluster::kmeans(errorCode& status){
         /* Scan components of current item and add it in current cluster */
         for(componentPos = 0; componentPos < this->dim; componentPos++){
 
-            /* Get current component */
+            /* Get current componet */
             newComponent = this->items[itemPos].getComponent(componentPos, status);
             if(status != SUCCESS)
                 return;
@@ -72,20 +83,33 @@ void cluster::kmeans(errorCode& status){
     } // End for - clusters
 }
 
-/* Update: pam like lloyd's algorithm*/
+/* Update: pam like lloyd's algorithm                          */
+/* New cluster: minimizes the overall distance from every item */
 void cluster::pamLloyd(errorCode& status){
     int itemPos, clusterPos, itemSameClusterPos; // Indexes
-    int newMinClusterPos;
+    int newMinClusterPos; // New cluster position
     int flag;
     double minDist, tmpDist;
 
     status = SUCCESS;
 
+    /* Check model */
+    if(this->fitted == -1){
+        status = INVALID_METHOD;
+        return;
+    }
+
+    if(this->fitted == 1){
+        status = METHOD_ALREADY_USED;
+        return;
+    }
+
     /*  Update each cluster with it's medoid */
     for(clusterPos = 0; clusterPos < this->numClusters; clusterPos++){
 
         flag = 0;
-        /* Scan each item for current cluster */
+
+        /* Scan all items and keep items in current cluster */
         for(itemPos = 0; itemPos < this->n; itemPos++){
 
             /* Item does not exists in current cluster - Discard it */
@@ -94,9 +118,10 @@ void cluster::pamLloyd(errorCode& status){
 
             tmpDist = 0;
 
-            /* Scan other items in the same cluster and find dissimilarty distance */
+            /* Scan other items in the same cluster and find dissimilarty distance for current item */
             for(itemSameClusterPos = 0; itemSameClusterPos < this->n; itemSameClusterPos++){
 
+                /* Do not check current item with it's self */
                 if(itemPos == itemSameClusterPos || this->itemsClusters[itemPos] != clusterPos)
                     continue;
 
@@ -104,17 +129,18 @@ void cluster::pamLloyd(errorCode& status){
                 tmpDist += this->distFunc(this->items[itemPos], this->clusters[clusterPos], status);
                 if(status != SUCCESS)
                     return;
-            } // End for items in same cluster except from x item
+            } // End for - iitems in same cluster except from x item
 
+            /* Fix minimun distance */
             if(flag == 0){
                 minDist = tmpDist;
                 newMinClusterPos = itemPos;
             }
             else if(minDist > tmpDist){
                 minDist = tmpDist;
-                newMinClusterPos = itemPos; 
+                newMinClusterPos = itemPos;
             }
-        } // End for items x
+        } // End for - items(x)
 
         /* Set new medoid */
         this->clusters[clusterPos] = this->items[newMinClusterPos];

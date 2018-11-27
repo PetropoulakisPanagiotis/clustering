@@ -5,20 +5,19 @@
 #include "../clustering/item/item.h"
 #include "../clustering/fileHandler/fileHandler.h"
 #include "../clustering/utils/utils.h"
-#include "../clustering/clusteringProblem/cluster.h"
-#include "helpers/helpers.h"
+#include "helpers/experimentHelpers.h"
 
 using namespace std;
 
 int main(int argc, char **argv){
-    int numClucsters;
+    int numClucsters = 4;
     char delim = ',';
     list<Item> items; // Items in given data set
-    int argumentsProvided, returnVal, complete; // Complete: for complete print
+    int argumentsProvided, returnVal;
+    int complete; // Complete: print items for every cluster
     string inputFile, confFile, outputFile, metrice;
-    string initAlgo, assignAlgo, updateAlgo;
     ofstream outputStream;
-    errorCode status;
+    errorCode status; // Keep errors
 
     /* Read and check arguments */
     argumentsProvided = readArguments(argc, argv, inputFile, confFile, outputFile, complete, metrice);
@@ -27,7 +26,8 @@ int main(int argc, char **argv){
         return 0;
     }
 
-    chrono::steady_clock::time_point beginTimer, endTimer; // Measure time
+    /* Measure time */
+    chrono::steady_clock::time_point beginTimer, endTimer;
 
     cout << "Welcome to clustering problem\n";
     cout << "-----------------------------\n\n";
@@ -43,10 +43,9 @@ int main(int argc, char **argv){
     }
     endTimer = chrono::steady_clock::now();
 
-    /* Print time */
+    /* Print elapsed time for reading the data set */
     cout << "Cluster:$ Items have been determined[in: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << " sec]\n\n";
 
-    cout << outputFile << "\n";
     /* Open output file */
     outputStream.open(outputFile, ios::trunc);
     if(!outputStream){
@@ -54,38 +53,33 @@ int main(int argc, char **argv){
         return 0;
     }
 
-    cluster* myCluster;
-
-    /*  Create cluster method */
-    initAlgo = "random";
-    assignAlgo = "lloyd";
-    updateAlgo = "k-means";
-    metrice = "euclidean";
-    numClucsters = 3;
-
-
-    cout << "Cluster:$ Creating model[" << initAlgo << "/" << assignAlgo << "/" << updateAlgo << "/" << metrice << "]\n\n";
-
-    outputStream << "Algorithm: " << initAlgo << "/" << assignAlgo << "/" << updateAlgo << "\n";
-    outputStream << "Metric: " << metrice << "\n";
-
-    beginTimer = chrono::steady_clock::now();
-    myCluster = new cluster(status, items, numClucsters, initAlgo, assignAlgo, updateAlgo, metrice);
-    endTimer = chrono::steady_clock::now();
-
-    /* Print time */
-    cout << "Cluster:$ Model created[in: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << " sec]\n\n";
-
+    ////////////////////////
     /* Perform clustering */
-    returnVal = runModel(myCluster, items, complete, outputStream, initAlgo, assignAlgo, updateAlgo, metrice, numClucsters);
+    ////////////////////////
+
+    returnVal = runModel(items, complete, outputStream, "random", "lloyd", "k-means", metrice, numClucsters);
     if(returnVal == -1){
         outputStream.close();
-        delete myCluster;
         return 0;
     }
 
-    cout << "Cluster:$ Deleting cluster\n\n";
-    delete myCluster;
+    returnVal = runModel(items, complete, outputStream, "random", "lloyd", "pam-lloyd", metrice, numClucsters);
+    if(returnVal == -1){
+        outputStream.close();
+        return 0;
+    }
+
+    returnVal = runModel(items, complete, outputStream, "k-means++", "lloyd", "k-means", metrice, numClucsters);
+    if(returnVal == -1){
+        outputStream.close();
+        return 0;
+    }
+
+    returnVal = runModel(items, complete, outputStream, "k-means++", "lloyd", "pam-lloyd", metrice, numClucsters);
+    if(returnVal == -1){
+        outputStream.close();
+        return 0;
+    }
 
     cout << "--Expirement is over. Have a good day!--\n";
     outputStream.close();

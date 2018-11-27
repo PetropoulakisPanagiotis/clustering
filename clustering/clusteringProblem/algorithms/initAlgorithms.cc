@@ -26,6 +26,10 @@ void cluster::randomInit(void){
     unordered_set<int>::iterator iterVisited;
     int currPos, i;
 
+    /* Check model */
+    if(this->fitted == -1 || this->fitted == 1)
+        return;
+
     /* Select clusters */
     for(i = 0; i < this->numClusters; i++){
 
@@ -65,6 +69,17 @@ void cluster::kmeansPlusInit(errorCode& status){
 
     /* Keep distances between items and minimum cluster */
     vector<double> minCalculatedDistances;
+
+    /* Check model */
+    if(this->fitted == -1){
+        status = INVALID_METHOD;
+        return;
+    }
+
+    if(this->fitted == 1){
+        status = METHOD_ALREADY_USED;
+        return;
+    }
 
     /* Pick initial cluster */
     itemPos = uniformDist(generator);

@@ -280,6 +280,10 @@ void printError(errorCode& status){
         case(INVALID_ALGO):
             cout << "Please give valid algorithms\n";
             break;
+
+        case(INVALID_TOL):
+            cout << "Please give an apropriate tolerance[" + to_string(MIN_TOL) + "," + to_string(MAX_TOL) +"]\n";
+            break;
     } // End switch
 }
 

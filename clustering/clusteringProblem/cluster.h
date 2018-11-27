@@ -20,6 +20,7 @@ class cluster{
         int dim;
         int numClusters; // Clusters to be created
         int maxIter;
+        double tol; // Tolerance
         double currStateVal; // Evaluate current state of cluster. Curr state represents objective value or something else.
         int fitted; // 1: items fitted, 2: clusters have been determined
         std::string initAlgo; // Init algorithm to be performed
@@ -43,7 +44,7 @@ class cluster{
         double findItemAvgDist(int itemPos, int itemClusterPos, std::vector<std::vector<double> >& calculatedDistances, errorCode& status);
 
     public:
-        cluster(errorCode& status, std::list<Item>& items, int numClusters=5, std::string initAlgo="random", std::string assignAlgo="lloyd", std::string updateAlgo="k-means", std::string metrice="euclidean", int maxIter=500);
+        cluster(errorCode& status, std::list<Item>& items, int numClusters=5, std::string initAlgo="random", std::string assignAlgo="lloyd", std::string updateAlgo="k-means", std::string metrice="euclidean", int maxIter=500, double tol=0.0001);
 
         /* Compute clustering */
         void fit(std::vector<Item>& clusters, std::vector<int>& clustersSize, errorCode& status);

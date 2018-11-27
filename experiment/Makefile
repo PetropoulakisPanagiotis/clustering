@@ -2,14 +2,14 @@
 CC = g++
 FLAGS = -g -Wall
 
-exmperiment: experiment.o helpers.o utils.o hashFunction.o item.o fileHandler.o lshEuclidean.o lshCosine.o cluster.o initAlgorithms.o assignAlgorithms.o updateAlgorithms.o clusterHelpers.o
-	$(CC) -o experiment $(FLAGS) experiment.o helpers.o utils.o hashFunction.o item.o fileHandler.o lshEuclidean.o lshCosine.o cluster.o initAlgorithms.o assignAlgorithms.o updateAlgorithms.o clusterHelpers.o -std=c++11
+exmperiment: experiment.o experimentHelpers.o utils.o hashFunction.o item.o fileHandler.o lshEuclidean.o lshCosine.o cluster.o initAlgorithms.o assignAlgorithms.o updateAlgorithms.o clusterHelpers.o
+	$(CC) -o experiment $(FLAGS) experiment.o experimentHelpers.o utils.o hashFunction.o item.o fileHandler.o lshEuclidean.o lshCosine.o cluster.o initAlgorithms.o assignAlgorithms.o updateAlgorithms.o clusterHelpers.o -std=c++11
 
 experiment.o: experiment.cc
 	$(CC) -c  $(FLAGS) experiment.cc -std=c++11
 
-helpers.o: helpers/helpers.cc
-	$(CC) -c  $(FLAGS) helpers/helpers.cc -std=c++11
+experimentHelpers.o: helpers/experimentHelpers.cc
+	$(CC) -c  $(FLAGS) helpers/experimentHelpers.cc -std=c++11
 
 utils.o: ../clustering/utils/utils.cc
 	$(CC) -c $(FLAGS) ../clustering/utils/utils.cc -std=c++11
@@ -50,7 +50,7 @@ clusterHelpers.o: ../clustering/clusteringProblem/helpers/clusterHelpers.cc
 	run
 
 clean:
-	rm -rf experiment experiment.o helpers.o utils.o hashFunction.o item.o fileHandler.o lshEuclidean.o lshCosine.o cluster.o initAlgorithms.o assignAlgorithms.o updateAlgorithms.o clusterHelpers.o
+	rm -rf experiment experiment.o experimentHelpers.o utils.o hashFunction.o item.o fileHandler.o lshEuclidean.o lshCosine.o cluster.o initAlgorithms.o assignAlgorithms.o updateAlgorithms.o clusterHelpers.o
 
 check:
 	valgrind --track-origins=yes --leak-check=full --show-leak-kinds=all --vgdb-error=1 ./experiment -i dataSets/twitter_dataset_small_small.csv -c cluster.conf -o outputFile.txt -d euclidean -complete

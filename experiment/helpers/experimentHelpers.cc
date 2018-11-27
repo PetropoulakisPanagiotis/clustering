@@ -4,7 +4,7 @@
 #include <vector>
 #include <chrono>
 #include <fstream>
-#include "helpers.h"
+#include "experimentHelpers.h"
 #include "../../clustering/utils/utils.h"
 #include "../../clustering/item/item.h"
 #include "../../clustering/clusteringProblem/cluster.h"
@@ -44,18 +44,31 @@ int readArguments(int argc, char **argv,string& inputFile, string& confFile, str
 /* Print results in output file                        */
 /* Success: 0                                          */
 /* Failure: -1                                         */
-int runModel(cluster* myCluster, list<Item>& items, int complete, ofstream& outputStream, string& initAlgo, string& assignAlgo, string& updateAlgo, string& metrice, int numClucsters){
+int runModel(list<Item>& items, int complete, ofstream& outputStream, string initAlgo, string assignAlgo, string updateAlgo, string& metrice, int numClucsters){
     vector<double> silhouetteArray;
     vector<Item> clusters;
     vector<int> clustersSize;
     int i, j, itemsSize = (int)items.size();
     chrono::steady_clock::time_point beginTimer, endTimer; // Measure time
     errorCode status;
-
+    cluster* myCluster;
 
     /* Check parameters */
     if(myCluster == NULL || (complete != 0 && complete != 1))
         return -1;
+
+    cout << "Cluster:$ Creating model[" << initAlgo << "/" << assignAlgo << "/" << updateAlgo << "/" << metrice << "]\n\n";
+
+    outputStream << "Algorithm: " << initAlgo << "/" << assignAlgo << "/" << updateAlgo << "\n";
+    outputStream << "Metric: " << metrice << "\n";
+
+    beginTimer = chrono::steady_clock::now();
+    myCluster = new cluster(status, items, numClucsters, initAlgo, assignAlgo, updateAlgo, metrice);
+    endTimer = chrono::steady_clock::now();
+
+    /* Print time */
+    cout << "Cluster:$ Model created[in: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << " sec]\n\n";
+
 
     cout << "Cluster:$ Fitting clusters\n\n";
 
@@ -183,6 +196,8 @@ int runModel(cluster* myCluster, list<Item>& items, int complete, ofstream& outp
         outputStream << "\n";
     } // End else complete
 
+    cout << "Cluster:$ Deleting cluster\n\n";
+    delete myCluster;
 
     return 0;
 };

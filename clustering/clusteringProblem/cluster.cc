@@ -14,7 +14,7 @@ using namespace std;
 /////////////////////////////////////
 
 /* Init cluster: Check for errors, set items and other members */
-cluster::cluster(errorCode& status, list<Item>& items, int numClusters, string initAlgo, string assignAlgo, string updateAlgo, string metrice, int maxIter):numClusters(numClusters), maxIter(maxIter), initAlgo(initAlgo), assignAlgo(assignAlgo), updateAlgo(updateAlgo), metrice(metrice){
+cluster::cluster(errorCode& status, list<Item>& items, int numClusters, string initAlgo, string assignAlgo, string updateAlgo, string metrice, int maxIter, double tol):numClusters(numClusters), maxIter(maxIter), initAlgo(initAlgo), assignAlgo(assignAlgo), updateAlgo(updateAlgo), metrice(metrice), tol(tol){
 
     status = SUCCESS;
 
@@ -23,6 +23,11 @@ cluster::cluster(errorCode& status, list<Item>& items, int numClusters, string i
     /* Check parameters */
     if(numClusters < MIN_CLUSTERS || numClusters > MAX_CLUSTERS){
         status = INVALID_CLUSTERS;
+        return;
+    }
+
+    if(tol < MIN_TOL || tol > MAX_TOL){
+        status = INVALID_TOL;
         return;
     }
 
@@ -131,7 +136,6 @@ void cluster::fit(vector<Item>& clusters, vector<int>& clustersSize, errorCode& 
         return;
     }
 
-
     /* Clear vectors */
     clusters.clear();
     clustersSize.clear();
@@ -180,7 +184,7 @@ void cluster::fit(vector<Item>& clusters, vector<int>& clustersSize, errorCode& 
         /* Error occured */
         if(status != SUCCESS)
             return;
-    } // End for - step
+    } // End for - perform clustering
 
     /* Map clusters with items for fast calculations(silhouette etc.) */
     for(itemPos = 0; itemPos < this->n; itemPos++){
@@ -287,7 +291,6 @@ void cluster::getSilhouette(vector<double>& silhouetteArray, errorCode& status){
         ////////////////////
 
         tmpDouble = b - a;
-
         if(a > b)
             tmpDouble /=  a;
         else

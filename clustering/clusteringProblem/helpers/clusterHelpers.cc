@@ -52,7 +52,7 @@ int cluster::myUpperBound(vector<vector<double> >& x, double val, errorCode& sta
 /* Check given vector(distances) for better performance                    */
 double cluster::findItemAvgDist(int itemPos, int itemClusterPos, vector<vector<double> >& calculatedDistances, errorCode& status){
     list<int>::iterator iterClusterItems;
-    double result = 0;
+    double result = 0; // Average distance
     double tmpDist = 0;
     int flag = 0, clusterSize = 0;
 
@@ -94,7 +94,7 @@ double cluster::findItemAvgDist(int itemPos, int itemClusterPos, vector<vector<d
 
     clusterSize = this->clustersItems[itemClusterPos].size();
 
-    /* Fix result */
+    /* Fix average distance aka result */
     if(flag == 1 && clusterSize != 0)
         result /= clusterSize - 1;
     else if(clusterSize != 0)

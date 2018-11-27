@@ -22,6 +22,17 @@ int cluster::lloydAssign(errorCode& status){
 
     status = SUCCESS;
 
+    /* Check model */
+    if(this->fitted == -1){
+        status = INVALID_METHOD;
+        return -1;
+    }
+
+    if(this->fitted == 1){
+        status = METHOD_ALREADY_USED;
+        return -1;
+    }
+
     /* Assign every item to it's nearest cluster */
     for(itemPos = 0; itemPos < this->n; itemPos++){
 
@@ -54,7 +65,7 @@ int cluster::lloydAssign(errorCode& status){
     } // End for - items
 
     /* Check terminate condition */
-    if(this->currStateVal == newObjVal)
+    if(abs(this->currStateVal - newObjVal) < this->tol)
         return 1;
 
     /* Set prevObjVal */
