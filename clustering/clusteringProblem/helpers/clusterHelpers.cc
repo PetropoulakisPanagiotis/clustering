@@ -54,6 +54,7 @@ double cluster::findItemAvgDist(int itemPos, int itemClusterPos, vector<vector<d
     list<int>::iterator iterClusterItems;
     double result = 0;
     double tmpDist = 0;
+    int flag = 0, clusterSize = 0;
 
     status = SUCCESS;
 
@@ -67,8 +68,10 @@ double cluster::findItemAvgDist(int itemPos, int itemClusterPos, vector<vector<d
     for(iterClusterItems = this->clustersItems[itemClusterPos].begin(); iterClusterItems != this->clustersItems[itemClusterPos].end(); iterClusterItems++){
 
         /* Discard same item */
-        if(itemPos == *iterClusterItems)
-           continue;
+        if(itemPos == *iterClusterItems){
+            flag = 1;
+            continue;
+        }
 
         /* Check calculated distances - Array is symetric */
         /* Distance have been calculated                  */
@@ -89,8 +92,13 @@ double cluster::findItemAvgDist(int itemPos, int itemClusterPos, vector<vector<d
         result += tmpDist;
     } // End for items in cluster
 
+    clusterSize = this->clustersItems[itemClusterPos].size();
+
     /* Fix result */
-    result /= this->clustersItems[itemClusterPos].size() - 1;
+    if(flag == 1 && clusterSize != 0)
+        result /= clusterSize - 1;
+    else if(clusterSize != 0)
+        result /= clusterSize;
 
     return result;
 }

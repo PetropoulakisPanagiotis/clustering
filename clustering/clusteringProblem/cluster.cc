@@ -101,6 +101,7 @@ cluster::cluster(errorCode& status, list<Item>& items, int numClusters, string i
 
         /* Add item */
         this->items.push_back(*iterItems);
+        this->itemsClusters.push_back(-1);
     } // End for
 
     /* Initialize clustersItems vector */
@@ -164,7 +165,7 @@ void cluster::fit(vector<Item>& clusters, vector<int>& clustersSize, errorCode& 
             return;
 
         /* Clusters have been determined */
-        if(terminate == 1)
+        if(terminate == 1 && step > 100)
            break;
 
         /////////////////////////////
@@ -196,12 +197,13 @@ void cluster::fit(vector<Item>& clusters, vector<int>& clustersSize, errorCode& 
     this->fitted = 1;
 }
 
-/* Calculate average silhouette of cluster */
+/* Return silhouette for every cluster and overall silhouette */
 void cluster::getSilhouette(vector<double>& silhouetteArray, errorCode& status){
-    list<int>::iterator iterClusterItems; // Iterate through indexes ofitems in each cluster
+    list<int>::iterator iterClusterItems; // Iterate through clusters of items
     vector<vector<double> > calculatedDistances; // Save visited distances
-    int itemDistancesPos, itemCurrentDistancePos, i; // Iterate through static vectors
-    int itemPos = 0, itemClusterPos = 0, clusterPos = 0, flag = 0, itemSecondClusterPos = 0;
+    int itemDistancesPos, itemCurrentDistancePos, i; // Iterate through calculated distances
+    int itemPos = 0, itemClusterPos = 0, clusterPos = 0; // Indexes
+    int flag = 0, itemSecondClusterPos = 0, currentClusterSize = 0;
     double a = 0, b = 0;
     double tmpDist = 0, minDist = 0, tmpDouble = 0;
 
@@ -218,14 +220,10 @@ void cluster::getSilhouette(vector<double>& silhouetteArray, errorCode& status){
         return;
     }
 
-    /* Init and clear list */
+    /* Init and clear given vector */
     silhouetteArray.clear();
     for(i = 0; i < this->numClusters + 1; i++)
         silhouetteArray.push_back(0);
-
-    //////////////////////////
-    /* Calculate silhouette */
-    //////////////////////////
 
     /* Initialize calculated distances */
     for(itemDistancesPos = 0; itemDistancesPos < this->n; itemDistancesPos++){
@@ -233,8 +231,12 @@ void cluster::getSilhouette(vector<double>& silhouetteArray, errorCode& status){
 
         for(itemCurrentDistancePos = 0; itemCurrentDistancePos < this->n; itemCurrentDistancePos++){
             calculatedDistances[itemDistancesPos].push_back(-1);
-        }
-    } // End for
+        } // End for - Dist(currentItem, xItem)
+    } // End for - Distances for current item
+
+    //////////////////////////
+    /* Calculate silhouette */
+    //////////////////////////
 
     /* Scan all items */
     for(itemPos = 0; itemPos < this->n; itemPos++){
@@ -283,6 +285,7 @@ void cluster::getSilhouette(vector<double>& silhouetteArray, errorCode& status){
         ////////////////////
         /* Fix silhouette */
         ////////////////////
+
         tmpDouble = b - a;
 
         if(a > b)
@@ -290,21 +293,20 @@ void cluster::getSilhouette(vector<double>& silhouetteArray, errorCode& status){
         else
             tmpDouble /=  b;
 
-        /* Add current s(itemPos) */
+        /* Fix s(itemPos) */
         silhouetteArray[this->itemsClusters[itemPos]] += tmpDouble;
 
         /* Fix overall silhouette */
         silhouetteArray[this->numClusters] += tmpDouble;
     } // End for items
 
-    int tmpSize;
-
     /* Fix silhouette for every cluster */
     for(i = 0; i < this->numClusters; i++){
-        tmpSize = this->clustersItems[i].size();
-        if(tmpSize != 0)
-            silhouetteArray[i] /= this->clustersItems[i].size();
-    } // End for
+        currentClusterSize = this->clustersItems[i].size();
+
+        if(currentClusterSize != 0)
+            silhouetteArray[i] /= currentClusterSize;
+    } // End for - silhouette per cluster
 
     /* Fix overall silhouette */
     silhouetteArray[this->numClusters] /= this->n;

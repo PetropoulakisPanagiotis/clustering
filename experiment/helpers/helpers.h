@@ -1,8 +1,8 @@
 #pragma once
 #include <list>
 #include <fstream>
-#include "../clustering/item/item.h"
-#include "../clustering/clusteringProblem/cluster.h"
+#include "../../clustering/item/item.h"
+#include "../../clustering/clusteringProblem/cluster.h"
 
 /*  Read arguments */
 int readArguments(int argc, char **argv, std::string& inputFile, std::string& confFile, std::string& outputFile, int& complete, std::string& metrice);

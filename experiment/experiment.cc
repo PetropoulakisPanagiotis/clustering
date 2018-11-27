@@ -6,7 +6,7 @@
 #include "../clustering/fileHandler/fileHandler.h"
 #include "../clustering/utils/utils.h"
 #include "../clustering/clusteringProblem/cluster.h"
-#include "helper.h"
+#include "helpers/helpers.h"
 
 using namespace std;
 

@@ -4,10 +4,10 @@
 #include <vector>
 #include <chrono>
 #include <fstream>
-#include "helper.h"
-#include "../clustering/utils/utils.h"
-#include "../clustering/item/item.h"
-#include "../clustering/clusteringProblem/cluster.h"
+#include "helpers.h"
+#include "../../clustering/utils/utils.h"
+#include "../../clustering/item/item.h"
+#include "../../clustering/clusteringProblem/cluster.h"
 
 using namespace std;
 
