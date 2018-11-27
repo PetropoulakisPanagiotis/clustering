@@ -2,8 +2,8 @@
 CC = g++
 FLAGS = -g -Wall
 
-exmperiment: experiment.o helper.o utils.o hashFunction.o item.o fileHandler.o lshEuclidean.o lshCosine.o cluster.o clusterAlgorithms.o clusterHelpers.o
-	$(CC) -o experiment $(FLAGS) experiment.o helper.o utils.o hashFunction.o item.o fileHandler.o lshEuclidean.o lshCosine.o cluster.o clusterAlgorithms.o clusterHelpers.o -std=c++11
+exmperiment: experiment.o helper.o utils.o hashFunction.o item.o fileHandler.o lshEuclidean.o lshCosine.o cluster.o initAlgorithms.o assignAlgorithms.o updateAlgorithms.o clusterHelpers.o
+	$(CC) -o experiment $(FLAGS) experiment.o helper.o utils.o hashFunction.o item.o fileHandler.o lshEuclidean.o lshCosine.o cluster.o initAlgorithms.o assignAlgorithms.o updateAlgorithms.o clusterHelpers.o -std=c++11
 
 experiment.o: experiment.cc
 	$(CC) -c  $(FLAGS) experiment.cc -std=c++11
@@ -32,18 +32,24 @@ lshCosine.o: ../clustering/neighborsProblem/model/lsh/lshCosine.cc
 cluster.o: ../clustering/clusteringProblem/cluster.cc
 	$(CC) -c $(FLAGS) ../clustering/clusteringProblem/cluster.cc -std=c++11
 
-clusterAlgorithms.o: ../clustering/clusteringProblem/clusterAlgorithms.cc
-	$(CC) -c $(FLAGS) ../clustering/clusteringProblem/clusterAlgorithms.cc -std=c++11
+initAlgorithms.o: ../clustering/clusteringProblem/algorithms/initAlgorithms.cc
+	$(CC) -c $(FLAGS) ../clustering/clusteringProblem/algorithms/initAlgorithms.cc -std=c++11
 
-clusterHelpers.o: ../clustering/clusteringProblem/clusterHelpers.cc
-	$(CC) -c $(FLAGS) ../clustering/clusteringProblem/clusterHelpers.cc -std=c++11
+assignAlgorithms.o: ../clustering/clusteringProblem/algorithms/assignAlgorithms.cc
+	$(CC) -c $(FLAGS) ../clustering/clusteringProblem/algorithms/assignAlgorithms.cc -std=c++11
+
+updateAlgorithms.o: ../clustering/clusteringProblem/algorithms/updateAlgorithms.cc
+	$(CC) -c $(FLAGS) ../clustering/clusteringProblem/algorithms/updateAlgorithms.cc -std=c++11
+
+clusterHelpers.o: ../clustering/clusteringProblem/helpers/clusterHelpers.cc
+	$(CC) -c $(FLAGS) ../clustering/clusteringProblem/helpers/clusterHelpers.cc -std=c++11
 
 .PHONY:
 	clean
 	check
 
 clean:
-	rm -rf experiment experiment.o helper.o utils.o hashFunction.o item.o fileHandler.o lshEuclidean.o lshCosine.o cluster.o clusterAlgorithms.o clusterHelpers.o
+	rm -rf experiment experiment.o helper.o utils.o hashFunction.o item.o fileHandler.o lshEuclidean.o lshCosine.o cluster.o initAlgorithms.o assignAlgorithms.o updateAlgorithms.o clusterHelpers.o
 
 check:
 	valgrind --track-origins=yes --leak-check=full --show-leak-kinds=all --vgdb-error=1 ./experiment -i dataSets/twitter_dataset_small_small.csv -c cluster.conf -o outputFile.txt -d euclidean -complete

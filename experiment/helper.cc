@@ -142,7 +142,7 @@ int runModel(cluster* myCluster, list<Item>& items, int complete, ofstream& outp
             clustersItemsStr.push_back(vector<string>());
 
         /* Get index of cluster for every item */
-        myCluster->getItemsCluster(itemsClusters, status);
+        myCluster->predict(itemsClusters, status);
         if(status != SUCCESS){
             printError(status);
             return -1;

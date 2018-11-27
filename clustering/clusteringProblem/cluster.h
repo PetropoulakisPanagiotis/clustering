@@ -13,14 +13,14 @@ class cluster{
     private:
         std::vector<Item> items;
         std::vector<int> itemsClusters; // Map item with cluster
-        std::vector<Item> clusters; // Items that represent every cluster
+        std::vector<Item> clusters; // Items that represents every cluster
         std::vector<std::list<int> > clustersItems; // Map every cluster with items
         double (*distFunc)(Item&, Item&, errorCode&); // Distance function
         int n;
         int dim;
-        int numClusters;
+        int numClusters; // Clusters to be created
         int maxIter;
-        double currStateVal; // Evaluate current state of cluster. Prev states represents objective value of something else 
+        double currStateVal; // Evaluate current state of cluster. Curr state represents objective value or something else.
         int fitted; // 1: items fitted, 2: clusters have been determined
         std::string initAlgo; // Init algorithm to be performed
         std::string assignAlgo;
@@ -52,7 +52,6 @@ class cluster{
         void getSilhouette(std::vector<double>& silhouetteList, errorCode& status);
 
         /* Map items with it's cluster */
-        void getItemsCluster(std::list<int>& itemsPos, errorCode& status);
+        void predict(std::list<int>& itemsPos, errorCode& status);
 };
-
 // Petropoulakis Panagiotis

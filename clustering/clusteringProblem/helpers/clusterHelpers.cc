@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <list>
-#include "../utils/utils.h"
-#include "cluster.h"
+#include "../../utils/utils.h"
+#include "../cluster.h"
 
 using namespace std;
 

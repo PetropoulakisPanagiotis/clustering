@@ -26,6 +26,11 @@ cluster::cluster(errorCode& status, list<Item>& items, int numClusters, string i
         return;
     }
 
+    if(items.size() < 0 || items.size() / numClusters < 40){
+        status = INVALID_POINTS;
+        return; 
+    }
+
     if(initAlgo != "random" && initAlgo != "k-means++"){
         status = INVALID_ALGO;
         return;
@@ -55,10 +60,10 @@ cluster::cluster(errorCode& status, list<Item>& items, int numClusters, string i
     /* Set members */
     /////////////////
 
-    list<Item>::iterator iter = items.begin();
+    list<Item>::iterator iterItems = items.begin();
     int i;
 
-    this->currStateVal = 0;
+    this->currStateVal = -1;
 
     /* Set distance function */
     if(metrice == "euclidean")
@@ -67,7 +72,7 @@ cluster::cluster(errorCode& status, list<Item>& items, int numClusters, string i
         this->distFunc = &cosineDistance;
 
     /* Check dim */
-    this->dim = iter->getDim();
+    this->dim = iterItems->getDim();
     if(this->dim <= 0 || this->dim > MAX_DIM){
         status = INVALID_DIM;
         return;
@@ -86,31 +91,31 @@ cluster::cluster(errorCode& status, list<Item>& items, int numClusters, string i
     this->clusters.reserve(this->numClusters);
 
     /* Copy items */
-    for(iter = items.begin(); iter != items.end(); iter++){
+    for(iterItems = items.begin(); iterItems != items.end(); iterItems++){
 
         /* Check consistency of dim */
-        if(this->dim != iter->getDim()){
+        if(this->dim != iterItems->getDim()){
             status = INVALID_POINTS;
             return;
         }
 
-        /* Add item and initialize clusters for items */
-        this->items.push_back(*iter);
-        this->itemsClusters.push_back(-1);
+        /* Add item */
+        this->items.push_back(*iterItems);
     } // End for
 
     /* Initialize clustersItems vector */
     for(i = 0; i < this->numClusters; i++)
         this->clustersItems.push_back(list<int>());
 
-    /* No error occured */
+    /* Success */
     this->fitted = 0;
 }
 
-/* Compute clustering */
+/* Perform clustering             */
+/* Return clusters and their size */
 void cluster::fit(vector<Item>& clusters, vector<int>& clustersSize, errorCode& status){
-    int step;
-    int terminate, itemPos, clusterPos;
+    int step, terminate;
+    int itemPos, clusterPos; // Indexes
 
     status = SUCCESS;
 
@@ -152,7 +157,7 @@ void cluster::fit(vector<Item>& clusters, vector<int>& clustersSize, errorCode& 
         /////////////////////////////////
 
         if(this->assignAlgo == "lloyd")
-            terminate = lloydAssign(status);
+            terminate = this->lloydAssign(status);
 
         /* Error occured */
         if(status != SUCCESS)
@@ -162,20 +167,19 @@ void cluster::fit(vector<Item>& clusters, vector<int>& clustersSize, errorCode& 
         if(terminate == 1)
            break;
 
-
         /////////////////////////////
         /* Select update algorithm */
         /////////////////////////////
 
         if(this->updateAlgo == "k-means")
-            kmeans(status);
+            this->kmeans(status);
         else if(this->updateAlgo == "pam-lloyd")
-            pamLloyd(status);
+            this->pamLloyd(status);
 
         /* Error occured */
         if(status != SUCCESS)
             return;
-    } // End while
+    } // End for - step
 
     /* Map clusters with items for fast calculations(silhouette etc.) */
     for(itemPos = 0; itemPos < this->n; itemPos++){
@@ -306,8 +310,8 @@ void cluster::getSilhouette(vector<double>& silhouetteArray, errorCode& status){
     silhouetteArray[this->numClusters] /= this->n;
 }
 
-/* Get index of cluster for items */
-void cluster::getItemsCluster(list<int>& itemsPos, errorCode& status){
+/* Return for every item the index of it's cluster */
+void cluster::predict(list<int>& itemsPos, errorCode& status){
     int itemPos;
 
     status = SUCCESS;
@@ -322,7 +326,6 @@ void cluster::getItemsCluster(list<int>& itemsPos, errorCode& status){
         status = METHOD_UNFITTED;
         return;
     }
-
 
     items.clear();
 
