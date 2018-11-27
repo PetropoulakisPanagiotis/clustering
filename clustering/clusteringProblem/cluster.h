@@ -54,5 +54,8 @@ class cluster{
 
         /* Map items with it's cluster */
         void predict(std::list<int>& itemsPos, errorCode& status);
+
+        /* Get id */
+        std::string getId(errorCode& status);
 };
 // Petropoulakis Panagiotis

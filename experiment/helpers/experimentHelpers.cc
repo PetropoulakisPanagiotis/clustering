@@ -46,59 +46,84 @@ int readArguments(int argc, char **argv,string& inputFile, string& confFile, str
 /* Failure: -1                                         */
 int runModel(list<Item>& items, int complete, ofstream& outputStream, string initAlgo, string assignAlgo, string updateAlgo, string& metrice, int numClucsters){
     vector<double> silhouetteArray;
-    vector<Item> clusters;
+    vector<Item> clusters; // Keep clusters
     vector<int> clustersSize;
-    int i, j, itemsSize = (int)items.size();
+    cluster* myCluster; // Cluster method
+    int i, j;
+    int silhouetteArraySize;
     chrono::steady_clock::time_point beginTimer, endTimer; // Measure time
     errorCode status;
-    cluster* myCluster;
 
     /* Check parameters */
-    if(myCluster == NULL || (complete != 0 && complete != 1))
+    if(complete != 0 && complete != 1)
         return -1;
 
-    cout << "Cluster:$ Creating model[" << initAlgo << "/" << assignAlgo << "/" << updateAlgo << "/" << metrice << "]\n\n";
+    cout << "Cluster:$ Creating model[" << initAlgo << "/" << assignAlgo << "/" << updateAlgo << "/" << metrice << "]\n";
 
-    outputStream << "Algorithm: " << initAlgo << "/" << assignAlgo << "/" << updateAlgo << "\n";
-    outputStream << "Metric: " << metrice << "\n";
+    //////////////////
+    /* Create model */
+    //////////////////
 
     beginTimer = chrono::steady_clock::now();
     myCluster = new cluster(status, items, numClucsters, initAlgo, assignAlgo, updateAlgo, metrice);
     endTimer = chrono::steady_clock::now();
 
-    /* Print time */
-    cout << "Cluster:$ Model created[in: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << " sec]\n\n";
-
-
-    cout << "Cluster:$ Fitting clusters\n\n";
-
-    /* Find clusters */
-    beginTimer = chrono::steady_clock::now();
-    myCluster->fit(clusters, clustersSize, status);
-    if(status != SUCCESS){
+    if(myCluster == NULL){
+        status = ALLOCATION_FAILED;
         printError(status);
         return -1;
     }
 
+    if(status != SUCCESS){
+        printError(status);
+        delete myCluster;
+        return -1;
+    }
+
+    /* Print elapsed time - Fix output file*/
+    outputStream << "Algorithm: " << myCluster->getId(status) << "\n";
+    if(status != SUCCESS){
+        printError(status);
+        delete myCluster;
+        return -1;
+    }
+
+    outputStream << "Metric: " << metrice << "\n";
+    cout << "Cluster:$ Model created[in: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << " sec]\n";
+
+    cout << "Cluster:$ Fitting clusters\n";
+
+    ///////////////////
+    /* Find clusters */
+    ///////////////////
+    beginTimer = chrono::steady_clock::now();
+    myCluster->fit(clusters, clustersSize, status);
     endTimer = chrono::steady_clock::now();
 
-    /* Print time */
-    cout << "Cluster:$ Clusters have been determined[in: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << " sec]\n\n";
+    if(status != SUCCESS){
+        printError(status);
+        delete myCluster;
+        return -1;
+    }
 
+    /* Print elapsed time */
+    cout << "Cluster:$ Clusters have been determined[in: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << " sec]\n";
 
-    /* Print in file */
+    /* Print statistics of clusters in file */
     for(i = 0; i < numClucsters; i++){
         if(updateAlgo == "pam-lloyd")
             outputStream << "CLUSTER-" << i + 1 << " {size: " << clustersSize[i] << "," << " centroid: " << clusters[i].getId() << "\n";
-        else if(updateAlgo == "k-means"){
-            outputStream << "CLUSTER-" << i + 1 << " {size: " << clustersSize[i] << "," << " centroid: ";
 
+        else{
+            outputStream << "CLUSTER-" << i + 1 << " {size: " << clustersSize[i] << "," << " centroid: ";
             outputStream << "[";
+
             /* Print components of cluster */
             for(j = 0; j < clusters[i].getDim(); j++){
                 outputStream << clusters[i].getComponent(j, status);
                 if(status != SUCCESS){
                     printError(status);
+                    delete myCluster;
                     return -1;
                 }
 
@@ -110,42 +135,46 @@ int runModel(list<Item>& items, int complete, ofstream& outputStream, string ini
         }
     } // End for clusters
 
-    cout << "Cluster:$ Calculating silhouette\n\n";
+    cout << "Cluster:$ Calculating silhouette\n";
 
+    ///////////////////////////////
     /* Find silhouette of cluster*/
+    ///////////////////////////////
     beginTimer = chrono::steady_clock::now();
     myCluster->getSilhouette(silhouetteArray, status);
+    endTimer = chrono::steady_clock::now();
+
     if(status != SUCCESS){
         printError(status);
         return -1;
     }
 
-    endTimer = chrono::steady_clock::now();
-
     cout << "Cluster:$ Silhouette: [";
     outputStream << "Silhouette: [";
 
-    /* Print silhouette results */
-    for(i = 0; i < (int)silhouetteArray.size(); i++){
+    silhouetteArraySize = silhouetteArray.size();
 
+    /* Print silhouette results */
+    for(i = 0; i < silhouetteArraySize; i++){
         cout << silhouetteArray[i];
         outputStream << silhouetteArray[i];
 
-        if(i != (int)silhouetteArray.size() - 1){
-            cout << ",";    
-            outputStream << ", ";    
+        if(i != silhouetteArraySize - 1){
+            cout << ",";
+            outputStream << ", ";
 
         }
     } // End for
 
-    cout << "] [in: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << " sec]\n\n";
+    cout << "] [in: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << " sec]\n";
     outputStream << "]\n";
 
+    //////////////////////////
     /* Print whole clusters */
+    //////////////////////////
     if(complete == 1){
-        /* Check for complete - Print for every cluster it's items */
-        vector<vector<string> > clustersItemsStr; // Keep for every cluster every item's id
-        list<int> itemsClusters;
+        vector<vector<string> > clustersItemsStr; // Save each id per item in the coresponding culster
+        list<int> itemsClusters; // Id of cluster for every item
         list<int>::iterator iterInt;
         list<Item>::iterator iterItems;
         int clusterSize;
@@ -157,20 +186,19 @@ int runModel(list<Item>& items, int complete, ofstream& outputStream, string ini
         /* Get index of cluster for every item */
         myCluster->predict(itemsClusters, status);
         if(status != SUCCESS){
-            printError(status);
+           printError(status);
+            delete myCluster;
             return -1;
         }
 
         iterInt = itemsClusters.begin();
 
-        /* Scan items and fix complete Strs vector */
+        /* Scan items and fix str vector */
         for(iterItems = items.begin(); iterItems != items.end(); iterItems++){
             clustersItemsStr[*iterInt].push_back(iterItems->getId());
 
             iterInt++;
-        } // End for scann items
-
-        outputStream << "\n";
+        } // End for - items
 
         /* Print whole clusters in file */
         for(i = 0; i < numClucsters; i++){
@@ -192,10 +220,11 @@ int runModel(list<Item>& items, int complete, ofstream& outputStream, string ini
                     outputStream << "}\n";
             } // End for items in cluster
         } // End for clusters
+    } // End if complete
 
-        outputStream << "\n";
-    } // End else complete
+    outputStream << "\n";
 
+    /* Delete model */
     cout << "Cluster:$ Deleting cluster\n\n";
     delete myCluster;
 

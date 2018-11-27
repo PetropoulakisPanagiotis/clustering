@@ -32,7 +32,7 @@ int main(int argc, char **argv){
     cout << "Welcome to clustering problem\n";
     cout << "-----------------------------\n\n";
 
-    cout << "Cluster:$ Reading data set\n";
+    cout << "Cluster:$ Reading data set\n\n";
 
     /* Read data set */
     beginTimer = chrono::steady_clock::now();

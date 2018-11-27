@@ -67,7 +67,7 @@ void cluster::kmeansPlusInit(errorCode& status){
     int clusterPos = 0, itemPos = 0, newClusterPos = 0;
     double currDist = 0, minDist = 0, tmpDouble = 0, randomDouble = 0;
 
-    /* Keep distances between items and minimum cluster */
+    /* Keep distances between items and (current)minimum cluster */
     vector<double> minCalculatedDistances;
 
     /* Check model */
@@ -81,11 +81,11 @@ void cluster::kmeansPlusInit(errorCode& status){
         return;
     }
 
-    /* Pick initial cluster */
+    ////////////////////////////////////
+    /* Pick initial cluster uniformly */
+    ////////////////////////////////////
     itemPos = uniformDist(generator);
     this->clusters.push_back(this->items[itemPos]);
-
-	/* Fix visited */
     visited.insert(itemPos);
 
     /* Find initial distances: dist(item, initial cluster) */
@@ -96,15 +96,23 @@ void cluster::kmeansPlusInit(errorCode& status){
         if(status != SUCCESS)
             return;
 
-        /* Add distances as min */
+        /* Add distance as min */
         minCalculatedDistances.push_back(currDist);
-    } // End for items
+    } // End for - items
 
+    /////////////////////////////
     /* Pick remaining clusters */
+    /* Method: partial sums    */
+    /////////////////////////////
+ 
     for(clusterPos = 1; clusterPos < this->numClusters; clusterPos++){
 
-        /* Vector of partial sums - Reset                      */
-        /* Each cell contains current partial sum and item pos */
+        /* Vector of partial sums - Reset                       */
+        /* Each cell contains current partial sum and item pos  */
+        /* !Note: current item could have been selected. In     */
+        /* this senario previous partial sum is copied in the   */
+        /* cell of coresponding item - Position is the position */
+        /* of the previous item.                                */
         vector<vector<double> > partialSums;
 
         for(int i = 0; i < this->n + 1; i++)
@@ -114,24 +122,23 @@ void cluster::kmeansPlusInit(errorCode& status){
         partialSums[0].push_back(0); // Dist
         partialSums[0].push_back(0); // Pos
 
-        /* For every item find min cluster, calculate dist(item,minCluster)^2 and fix current partial sum*/
+        /* For every item find min cluster, calculate dist(item,minCluster)^2 and fix current partial sum */
         for(itemPos = 0; itemPos < this->n; itemPos++){
 
-			/* Discard clusters */
-    	    iterVisited = visited.find(itemPos);
+    	    /* Check visited */
+            iterVisited = visited.find(itemPos);
 
-            /* Item is a cluster */
+            /* Item is a cluster - Discard it and fix partial sum */
     	    if(iterVisited != visited.end()){
 				partialSums[itemPos + 1].push_back(partialSums[itemPos][0]); // Add previous partial sum
 				partialSums[itemPos + 1].push_back(partialSums[itemPos][1]); // Add previous pos
 			}
             else{
-                /* Set as initial min distance as the previous one */
+                /* Set the initial min distance as the previous one */
                 minDist = minCalculatedDistances[itemPos];
 
                 /* Check if previous cluster is closer to the current item */
                 if(clusterPos != 1){
-                    /* Find distance form previous cluster */
                     currDist = this->distFunc(this->items[itemPos], this->clusters[clusterPos - 1], status);
                     if(status != SUCCESS)
                         return;
@@ -139,8 +146,6 @@ void cluster::kmeansPlusInit(errorCode& status){
                     /* Set min distance */
                     if(currDist < minDist){
                         minDist = currDist;
-
-                        /* Set new min distance */
                         minCalculatedDistances[itemPos] = minDist;
                     }
                 } // End if - Find new min cluster
@@ -148,14 +153,10 @@ void cluster::kmeansPlusInit(errorCode& status){
                 //////////////////////
                 /* Set partial sums */
                 //////////////////////
-
-                /* Find: D(i)^2 */
                 tmpDouble = minDist * minDist;
-
-                /* Find current partial sum - add previous partial sum with current */
                 tmpDouble += partialSums[itemPos][0];
 
-                /* Fix partial sums */
+                /* Fix vector of partial sums */
                 partialSums[itemPos + 1].push_back(tmpDouble); // Add partial sum
                 partialSums[itemPos + 1].push_back(partialSums[itemPos][1] + 1); // Add new pos
             } // End if - item is not a cluster
@@ -167,7 +168,7 @@ void cluster::kmeansPlusInit(errorCode& status){
 	    /* Find random double */
         randomDouble = uniformDist1(generator);
 
-        /* Find position on new cluster */
+        /* Find the position of the new cluster */
         newClusterPos = myUpperBound(partialSums, randomDouble, status);
         if(status != SUCCESS)
             return;
@@ -175,7 +176,6 @@ void cluster::kmeansPlusInit(errorCode& status){
         /* Add new cluster and fix visited */
         this->clusters.push_back(this->items[newClusterPos]);
         iterVisited = visited.find(newClusterPos);
-    } // End for remaining clusters 
+    } // End for remaining clusters
 }
-
 // Petropoulakis Panagiotis

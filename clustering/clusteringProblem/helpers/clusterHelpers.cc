@@ -8,12 +8,29 @@ using namespace std;
 
 /* Perform upper bound algorithm like stl's algorithms. Return index of given value */
 /* Given vector must be sorted                                                      */
-/* Form of vector: [[0, pos], [val2, pos2], ...., [valn, posn]                      */
+/* Form of vector: [[0, 0], [val2, pos2], ...., [valn, posn]                        */
+/* Form of vector: x[i][1] == pos, x[i], x[j] can have the same pos                 */
 /* !!! Do not call this function with different form of vector                      */
 int cluster::myUpperBound(vector<vector<double> >& x, double val, errorCode& status){
 
+    /* Check model */
+    if(this->fitted == -1){
+        status = INVALID_METHOD;
+        return -1;
+    }
+
+    if(this->fitted == 1){
+        status = METHOD_ALREADY_USED;
+        return -1;
+    }
+
     /*  Check parameters */
-    if(x.size() < 2 || val < 0 || x[0][0] != 0){
+    if(x.size() < 2 || val < 0){
+        status = INVALID_PARAMETERS;
+        return -1;
+    }
+
+    if(x[0].size() < 1 || x[0][0] != 0){
         status = INVALID_PARAMETERS;
         return -1;
     }

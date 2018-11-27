@@ -14,7 +14,7 @@ using namespace std;
 /////////////////////////////////////
 
 /* Init cluster: Check for errors, set items and other members */
-cluster::cluster(errorCode& status, list<Item>& items, int numClusters, string initAlgo, string assignAlgo, string updateAlgo, string metrice, int maxIter, double tol):numClusters(numClusters), maxIter(maxIter), initAlgo(initAlgo), assignAlgo(assignAlgo), updateAlgo(updateAlgo), metrice(metrice), tol(tol){
+cluster::cluster(errorCode& status, list<Item>& items, int numClusters, string initAlgo, string assignAlgo, string updateAlgo, string metrice, int maxIter, double tol):numClusters(numClusters), maxIter(maxIter), tol(tol), initAlgo(initAlgo), assignAlgo(assignAlgo), updateAlgo(updateAlgo), metrice(metrice){
 
     status = SUCCESS;
 
@@ -336,5 +336,37 @@ void cluster::predict(list<int>& itemsPos, errorCode& status){
 
     for(itemPos = 0; itemPos < this->n; itemPos++)
         itemsPos.push_back(this->itemsClusters[itemPos]);
+}
+
+/* Get id of method */
+string cluster::getId(errorCode& status){
+    string id = "";
+
+    status = SUCCESS;
+
+    /* Check model */
+    if(this->fitted == -1){
+        status = INVALID_METHOD;
+        return "";
+    }
+
+    if(this->initAlgo == "random")
+        id += to_string(1) + "x";
+    else
+        id += to_string(2) + "x";
+
+    if(this->assignAlgo == "lloyd")
+        id += to_string(1) + "x";
+    else if(this->assignAlgo == "range-lsh")
+        id += to_string(2) + "x";
+    else
+        id += to_string(3) + "x";
+
+    if(this->updateAlgo == "k-means")
+        id += to_string(1);
+    else
+        id += to_string(2);
+
+    return id;
 }
 // Petropoulakis Panagiotis

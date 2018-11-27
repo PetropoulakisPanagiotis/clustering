@@ -23,8 +23,8 @@
 #define MIN_ITER 50
 #define MIN_CLUSTERS 2
 #define MAX_CLUSTERS 600
-#define MIN_TOL 0.0000005
-#define MAX_TOL 0
+#define MIN_TOL 0
+#define MAX_TOL 1
 
 /* Errors */
 typedef enum errorCode{
