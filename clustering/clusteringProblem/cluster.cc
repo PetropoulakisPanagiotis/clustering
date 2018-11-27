@@ -26,8 +26,8 @@ cluster::cluster(errorCode& status, list<Item>& items, int numClusters, string i
         return;
     }
 
-    if(items.size() < 0 || items.size() / numClusters < 40){
-        status = INVALID_POINTS;
+    if((items.size() / numClusters) < 5){
+        status = INVALID_CLUSTERS;
         return; 
     }
 
@@ -165,7 +165,7 @@ void cluster::fit(vector<Item>& clusters, vector<int>& clustersSize, errorCode& 
             return;
 
         /* Clusters have been determined */
-        if(terminate == 1 && step > 100)
+        if(terminate == 1)
            break;
 
         /////////////////////////////

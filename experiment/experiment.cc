@@ -61,7 +61,7 @@ int main(int argc, char **argv){
     assignAlgo = "lloyd";
     updateAlgo = "k-means";
     metrice = "euclidean";
-    numClucsters = 4;
+    numClucsters = 3;
 
 
     cout << "Cluster:$ Creating model[" << initAlgo << "/" << assignAlgo << "/" << updateAlgo << "/" << metrice << "]\n\n";

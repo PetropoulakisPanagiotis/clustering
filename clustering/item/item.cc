@@ -347,7 +347,7 @@ double Item::euclideanDist(Item& x, errorCode& status){
 
     /* Calculate distance */
     for(i = 0; i < this->dim; i++){
-        newComponent = this->components[i] + x.components[i];
+        newComponent = this->components[i] - x.components[i];
 
         tempMult = newComponent * newComponent;
 

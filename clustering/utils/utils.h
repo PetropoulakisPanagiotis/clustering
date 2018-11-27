@@ -22,7 +22,7 @@
 #define MAX_ITER 700 // Max iterations for clustering methods
 #define MIN_ITER 50
 #define MIN_CLUSTERS 2
-#define MAX_CLUSTERS 100
+#define MAX_CLUSTERS 600
 
 /* Errors */
 typedef enum errorCode{

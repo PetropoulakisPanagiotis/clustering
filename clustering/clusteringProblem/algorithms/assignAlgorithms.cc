@@ -53,9 +53,6 @@ int cluster::lloydAssign(errorCode& status){
         this->itemsClusters[itemPos] = minClusterPos;
     } // End for - items
 
-    cout << setprecision(15) << this->currStateVal << "\n";
-    cout << setprecision(15) << newObjVal << "\n";
-
     /* Check terminate condition */
     if(this->currStateVal == newObjVal)
         return 1;
