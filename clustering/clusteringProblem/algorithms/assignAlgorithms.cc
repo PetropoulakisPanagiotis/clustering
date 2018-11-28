@@ -96,7 +96,6 @@ int cluster::rangeAssign(double& radius, errorCode& status){
 
     status = SUCCESS;
 
-
     /* Check model */
     if(this->fitted == -1 || this->rangeModel == NULL){
         status = INVALID_METHOD;
@@ -118,6 +117,7 @@ int cluster::rangeAssign(double& radius, errorCode& status){
     ////////////////////////////////////////////
     /* Perform range search for every cluster */
     ////////////////////////////////////////////
+    int x = 0;
 
     for(clusterPos = 0; clusterPos < this->numClusters; clusterPos++){
 
@@ -135,7 +135,8 @@ int cluster::rangeAssign(double& radius, errorCode& status){
             //////////////////////////////////////////////
 
             /*  Check if current cluster is the nearest */
-            if(this->itemsClusters[*iterNeighbors] != -1){
+            if(this->itemsClusters[*iterNeighbors] != -1 && clusterPos != 0){
+                x+= 1;
                 if(minCalculatedDistances[*iterNeighbors] > *iterNeighborsDistances){
                     minCalculatedDistances[*iterNeighbors] = *iterNeighborsDistances;
 
@@ -151,12 +152,14 @@ int cluster::rangeAssign(double& radius, errorCode& status){
             iterNeighborsDistances++;
         } // End for - neighbors
     } // End for - clusters
+    
+    int total = 0;
 
     /* Assign items with no clusters and calculate objective function */
     for(itemPos = 0; itemPos < this->n; itemPos++){
 
         if(this->itemsClusters[itemPos] == -1){
-
+            total += 1;
             /* Initialize minimum cluster */
             minDist = this->distFunc(this->items[itemPos], this->clusters[0], status);
             if(status != SUCCESS)
@@ -192,9 +195,8 @@ int cluster::rangeAssign(double& radius, errorCode& status){
             newObjVal += tmpObjVal;
         }
     } // End for - items
-
-    cout << this->currStateVal << "\n";
-    cout << newObjVal << "\n\n";
+    cout << total << "oxi assign\n";
+    cout << x << "sigrousis" << "\n";
 
     /* Check terminate condition */
     if(abs(this->currStateVal - newObjVal) < this->tol)
@@ -202,6 +204,9 @@ int cluster::rangeAssign(double& radius, errorCode& status){
 
     /* Set prevObjVal */
     this->currStateVal = newObjVal;
+
+    /* Set radius */
+    radius = radius + 0.05;
 
     return 0;
 }

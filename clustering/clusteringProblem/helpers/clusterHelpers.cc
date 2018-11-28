@@ -122,8 +122,8 @@ double cluster::findItemAvgDist(int itemPos, int itemClusterPos, vector<vector<d
     return result;
 }
 
-/* Initialize radius for range search   */
-/* Minimum distance between centers / 2 */
+/* Initialize radius for range search */
+/* Minimum distance between centers   */
 void cluster::initRadius(double& radius, errorCode& status){
     int i, j, flag = 0, clustersSize;
     double minDist = 0, tmpDist = 0;
@@ -168,6 +168,6 @@ void cluster::initRadius(double& radius, errorCode& status){
     } // End for
 
     /* Set radius */
-    radius = minDist / 2.0;
+    radius = minDist;
 }
 // Petropoulakis Panagiotis
