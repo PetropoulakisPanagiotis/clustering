@@ -13,6 +13,8 @@ using namespace std;
 /* !!! Do not call this function with different form of vector                      */
 int cluster::myUpperBound(vector<vector<double> >& x, double val, errorCode& status){
 
+    status = SUCCESS;
+
     /* Check model */
     if(this->fitted == -1){
         status = INVALID_METHOD;
@@ -120,4 +122,52 @@ double cluster::findItemAvgDist(int itemPos, int itemClusterPos, vector<vector<d
     return result;
 }
 
+/* Initialize radius for range search   */
+/* Minimum distance between centers / 2 */
+void cluster::initRadius(double& radius, errorCode& status){
+    int i, j, flag = 0, clustersSize;
+    double minDist = 0, tmpDist = 0;
+
+    status = SUCCESS;
+
+    clustersSize = this->clusters.size();
+
+    /* Check model */
+    if(this->fitted == -1 || clustersSize != this->numClusters){
+        status = INVALID_METHOD;
+        return;
+    }
+
+    if(this->fitted == 1){
+        status = METHOD_ALREADY_USED;
+        return;
+    }
+
+    /* Scan centers */
+    for(i = 0; i < clustersSize; i++){
+
+        /* Scan other centers */
+        for(j = 0; j < clustersSize; j++ ){
+            /* Discard same cluster */
+            if(i == j)
+                continue;
+
+            /* Find current distance */
+            tmpDist = this->distFunc(this->clusters[i], this->clusters[j], status);
+            if(status != SUCCESS)
+               return;
+
+            /* Fix min dist */
+            if(flag == 0){
+                minDist = tmpDist;
+                flag = 1;
+            }
+            else if(minDist > tmpDist)
+                minDist = tmpDist;
+        } // End for
+    } // End for
+
+    /* Set radius */
+    radius = minDist / 2.0;
+}
 // Petropoulakis Panagiotis

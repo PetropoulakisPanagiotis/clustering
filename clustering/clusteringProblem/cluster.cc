@@ -113,15 +113,285 @@ cluster::cluster(errorCode& status, list<Item>& items, int numClusters, string i
     for(i = 0; i < this->numClusters; i++)
         this->clustersItems.push_back(list<int>());
 
+    /* Check for range search */
+    if(assignAlgo == "range-lsh" && metrice == "euclidean")
+        this->rangeModel = new lshEuclidean();
+    else if(assignAlgo == "range-lsh" && metrice == "cosine")
+        this->rangeModel = new lshCosine();
+    else if(assignAlgo == "range-hypercube" && metrice == "euclidean")
+        this->rangeModel = new hypercubeEuclidean();
+    else if(assignAlgo == "range-hypercube" && metrice == "cosine")
+        this->rangeModel = new hypercubeCosine();
+    else
+        this->rangeModel = NULL;
+
+    if(assignAlgo != "lloyd" && this->rangeModel == NULL){
+        status = ALLOCATION_FAILED;
+        return;
+    }
+
     /* Success */
     this->fitted = 0;
 }
 
+/* Init cluster: Check for errors, set items and other members */
+cluster::cluster(errorCode& status, list<Item>& items, int k, int l, int w, float coefficientint, int numClusters, string initAlgo, string assignAlgo, string updateAlgo, string metrice, int maxIter, double tol):numClusters(numClusters), maxIter(maxIter), tol(tol), initAlgo(initAlgo), assignAlgo(assignAlgo), updateAlgo(updateAlgo), metrice(metrice){
+
+    status = SUCCESS;
+
+    this->fitted = -1;
+
+    /* Check parameters */
+    if(numClusters < MIN_CLUSTERS || numClusters > MAX_CLUSTERS){
+        status = INVALID_CLUSTERS;
+        return;
+    }
+
+    if(tol < MIN_TOL || tol > MAX_TOL){
+        status = INVALID_TOL;
+        return;
+    }
+
+    if((items.size() / numClusters) < 5){
+        status = INVALID_CLUSTERS;
+        return; 
+    }
+
+    if(initAlgo != "random" && initAlgo != "k-means++"){
+        status = INVALID_ALGO;
+        return;
+    }
+
+    if(assignAlgo != "lloyd" && assignAlgo != "range-lsh" && assignAlgo != "range-hypercube"){
+        status = INVALID_ALGO;
+        return;
+    }
+
+    if(updateAlgo != "k-means" && updateAlgo != "pam-lloyd"){
+        status = INVALID_ALGO;
+        return;
+    }
+
+    if(metrice != "euclidean" && metrice != "cosine"){
+        status = INVALID_METRICE;
+        return;
+    }
+
+    if(maxIter < MIN_ITER || maxIter > MAX_ITER){
+        status = INVALID_ITER;
+        return;
+    }
+
+    /////////////////
+    /* Set members */
+    /////////////////
+
+    list<Item>::iterator iterItems = items.begin();
+    int i;
+
+    this->currStateVal = -1;
+
+    /* Set distance function */
+    if(metrice == "euclidean")
+        this->distFunc = &euclideanDistance;
+    else
+        this->distFunc = &cosineDistance;
+
+    /* Check dim */
+    this->dim = iterItems->getDim();
+    if(this->dim <= 0 || this->dim > MAX_DIM){
+        status = INVALID_DIM;
+        return;
+    }
+
+    /* Set number of items */
+    this->n = items.size();
+    if(this->n < MIN_POINTS || this->n > MAX_POINTS){
+        status = INVALID_POINTS;
+        return;
+    }
+
+    /* Fix vectors */
+    this->items.reserve(this->n);
+    this->itemsClusters.reserve(this->n);
+    this->clusters.reserve(this->numClusters);
+
+    /* Copy items */
+    for(iterItems = items.begin(); iterItems != items.end(); iterItems++){
+
+        /* Check consistency of dim */
+        if(this->dim != iterItems->getDim()){
+            status = INVALID_POINTS;
+            return;
+        }
+
+        /* Add item */
+        this->items.push_back(*iterItems);
+        this->itemsClusters.push_back(-1);
+    } // End for
+
+    /* Initialize clustersItems vector */
+    for(i = 0; i < this->numClusters; i++)
+        this->clustersItems.push_back(list<int>());
+
+    /* Check for range search */
+    if(assignAlgo == "range-lsh" && metrice == "euclidean")
+        this->rangeModel = new lshEuclidean(k, l, w, coefficientint, status);
+    else if(assignAlgo == "range-lsh" && metrice == "cosine")
+        this->rangeModel = new lshCosine(k, l, status);
+    else if(assignAlgo == "range-hypercube" && metrice == "euclidean")
+        status = INVALID_PARAMETERS;
+    else if(assignAlgo == "range-hypercube" && metrice == "cosine")
+        status = INVALID_PARAMETERS;
+    else
+        this->rangeModel = NULL;
+
+    if(assignAlgo != "lloyd" && this->rangeModel == NULL){
+        status = ALLOCATION_FAILED;
+        return;
+    }
+
+    if(status != SUCCESS)
+        return;
+
+    /* Success */
+    this->fitted = 0;
+}
+
+/* Init cluster: Check for errors, set items and other members */
+cluster::cluster(errorCode& status, list<Item>& items, int k, int m, int probes, int numClusters, string initAlgo, string assignAlgo, string updateAlgo, string metrice, int maxIter, double tol):numClusters(numClusters), maxIter(maxIter), tol(tol), initAlgo(initAlgo), assignAlgo(assignAlgo), updateAlgo(updateAlgo), metrice(metrice){
+
+    status = SUCCESS;
+
+    this->fitted = -1;
+
+    /* Check parameters */
+    if(numClusters < MIN_CLUSTERS || numClusters > MAX_CLUSTERS){
+        status = INVALID_CLUSTERS;
+        return;
+    }
+
+    if(tol < MIN_TOL || tol > MAX_TOL){
+        status = INVALID_TOL;
+        return;
+    }
+
+    if((items.size() / numClusters) < 5){
+        status = INVALID_CLUSTERS;
+        return; 
+    }
+
+    if(initAlgo != "random" && initAlgo != "k-means++"){
+        status = INVALID_ALGO;
+        return;
+    }
+
+    if(assignAlgo != "lloyd" && assignAlgo != "range-lsh" && assignAlgo != "range-hypercube"){
+        status = INVALID_ALGO;
+        return;
+    }
+
+    if(updateAlgo != "k-means" && updateAlgo != "pam-lloyd"){
+        status = INVALID_ALGO;
+        return;
+    }
+
+    if(metrice != "euclidean" && metrice != "cosine"){
+        status = INVALID_METRICE;
+        return;
+    }
+
+    if(maxIter < MIN_ITER || maxIter > MAX_ITER){
+        status = INVALID_ITER;
+        return;
+    }
+
+    /////////////////
+    /* Set members */
+    /////////////////
+
+    list<Item>::iterator iterItems = items.begin();
+    int i;
+
+    this->currStateVal = -1;
+
+    /* Set distance function */
+    if(metrice == "euclidean")
+        this->distFunc = &euclideanDistance;
+    else
+        this->distFunc = &cosineDistance;
+
+    /* Check dim */
+    this->dim = iterItems->getDim();
+    if(this->dim <= 0 || this->dim > MAX_DIM){
+        status = INVALID_DIM;
+        return;
+    }
+
+    /* Set number of items */
+    this->n = items.size();
+    if(this->n < MIN_POINTS || this->n > MAX_POINTS){
+        status = INVALID_POINTS;
+        return;
+    }
+
+    /* Fix vectors */
+    this->items.reserve(this->n);
+    this->itemsClusters.reserve(this->n);
+    this->clusters.reserve(this->numClusters);
+
+    /* Copy items */
+    for(iterItems = items.begin(); iterItems != items.end(); iterItems++){
+
+        /* Check consistency of dim */
+        if(this->dim != iterItems->getDim()){
+            status = INVALID_POINTS;
+            return;
+        }
+
+        /* Add item */
+        this->items.push_back(*iterItems);
+        this->itemsClusters.push_back(-1);
+    } // End for
+
+    /* Initialize clustersItems vector */
+    for(i = 0; i < this->numClusters; i++)
+        this->clustersItems.push_back(list<int>());
+
+    /* Check for range search */
+    if(assignAlgo == "range-lsh" && metrice == "euclidean")
+        status = INVALID_PARAMETERS;
+    else if(assignAlgo == "range-lsh" && metrice == "cosine")
+        status = INVALID_PARAMETERS;
+    else if(assignAlgo == "range-hypercube" && metrice == "euclidean")
+        this->rangeModel = new hypercubeEuclidean(k, m, probes, status);
+    else if(assignAlgo == "range-hypercube" && metrice == "cosine")
+        this->rangeModel = new hypercubeCosine(k, m, probes, status);
+    else
+        this->rangeModel = NULL;
+
+    if(assignAlgo != "lloyd" && this->rangeModel == NULL){
+        status = ALLOCATION_FAILED;
+        return;
+    }
+
+    if(status != SUCCESS)
+        return;
+
+    /* Success */
+    this->fitted = 0;
+}
+
+cluster::~cluster(){
+    if(this->rangeModel)
+        delete this->rangeModel;
+}
 /* Perform clustering             */
 /* Return clusters and their size */
 void cluster::fit(vector<Item>& clusters, vector<int>& clustersSize, errorCode& status){
     int step, terminate;
     int itemPos, clusterPos; // Indexes
+    double radius; // For range search
 
     status = SUCCESS;
 
@@ -153,6 +423,15 @@ void cluster::fit(vector<Item>& clusters, vector<int>& clustersSize, errorCode& 
     if(status != SUCCESS)
         return;
 
+    ////////////////////////////////////////
+    /* Initialize radius for range search */
+    ////////////////////////////////////////
+    if(assignAlgo != "lloyd"){
+        initRadius(radius, status);
+        if(status != SUCCESS)
+            return;
+    }
+
     /* Perform clustering                             */
     /* Max iter: Is the strongest terminate condition */
     for(step = 0; step < this->maxIter; step++){
@@ -163,6 +442,8 @@ void cluster::fit(vector<Item>& clusters, vector<int>& clustersSize, errorCode& 
 
         if(this->assignAlgo == "lloyd")
             terminate = this->lloydAssign(status);
+        else
+            terminate = this->rangeAssign(radius, status);
 
         /* Error occured */
         if(status != SUCCESS)
