@@ -63,6 +63,7 @@ hypercubeEuclidean::~hypercubeEuclidean(){
 void hypercubeEuclidean::fit(list<Item>& points, errorCode& status){
     int i;
     int pos; // Pos in cube
+    entry newEntry;
 
     /* Iteratiors */
     list<Item>::iterator iterPoints = points.begin(); // Iterate through points
@@ -94,7 +95,7 @@ void hypercubeEuclidean::fit(list<Item>& points, errorCode& status){
 
     /* Fix table */
     for(i = 0; i < this->tableSize; i++)
-        this->cube.push_back(list<Item>());
+        this->cube.push_back(list<entry>());
 
     /* Set dimension */
     this->dim = iterPoints->getDim();
@@ -120,7 +121,8 @@ void hypercubeEuclidean::fit(list<Item>& points, errorCode& status){
     //////////////
     /* Set cube */
     //////////////
-    
+    int position = 0;
+
     /* Scan given points */
     for(iterPoints = points.begin(); iterPoints != points.end(); iterPoints++){
         /* Check consistency of dim */
@@ -140,9 +142,14 @@ void hypercubeEuclidean::fit(list<Item>& points, errorCode& status){
             this->k = -1;
             break;
         }
-
+        
+        /* Set new entry */
+        newEntry.point = *iterPoints;
+        newEntry.pos = position;
+        
         /* Add point */
-        this->cube[pos].push_back(*iterPoints);
+        this->cube[pos].push_back(newEntry);
+        position++;
     } // End for - Points
 
     /* Error occured - Clear structures */
@@ -164,7 +171,7 @@ void hypercubeEuclidean::fit(list<Item>& points, errorCode& status){
 void hypercubeEuclidean::radiusNeighbors(Item& query, int radius, list<Item>& neighbors, list<double>* neighborsDistances, errorCode& status){
     int i, initialPos, pos;
     double currDist; // Distance of a point in list
-    list<Item>::iterator iter;
+    list<entry>::iterator iter;
     vector<neighborVertice> neighborVertices; // Keep all neighbors  
     int numNeighbors = 0; // Number of neighbors
 
@@ -230,13 +237,105 @@ void hypercubeEuclidean::radiusNeighbors(Item& query, int radius, list<Item>& ne
             numNeighbors += 1;
             
             /* Find current distance */
-            currDist = iter->euclideanDist(query, status);
+            currDist = iter->point.euclideanDist(query, status);
             if(status != SUCCESS)
                 return;
             
             /* Keep neighbor */
             if(currDist < radius){
-                neighbors.push_back(*iter);
+                neighbors.push_back(iter->point);
+                if(neighborsDistances != NULL)
+                    neighborsDistances->push_back(currDist);
+            }
+
+            /* Found m neighbors */
+            if(numNeighbors == m)
+                break;
+        } // End for - Scan list
+
+        /* Found m neighbors */
+        if(numNeighbors == m)
+            break;
+    } // End for - Probes
+}
+
+/* Find the radius neighbors of a given point */
+void hypercubeEuclidean::radiusNeighbors(Item& query, int radius, list<int>& neighborsIndexes, list<double>* neighborsDistances, errorCode& status){
+    int i, initialPos, pos;
+    double currDist; // Distance of a point in list
+    list<entry>::iterator iter;
+    vector<neighborVertice> neighborVertices; // Keep all neighbors  
+    int numNeighbors = 0; // Number of neighbors
+
+    status = SUCCESS;
+    
+    /* Check parameters */
+    if(radius < MIN_RADIUS || radius > MAX_RADIUS){
+        status = INVALID_RADIUS;
+        return; 
+    }
+
+    /* Check model */
+    if(this->fitted == 0){
+        status = METHOD_UNFITTED;
+        return;
+    }
+
+    if(this->k == -1){
+        status = INVALID_METHOD;
+        return;
+    }
+
+    /* Clear given lists */
+    neighborsIndexes.clear();
+    if(neighborsDistances != NULL)
+        neighborsDistances->clear();
+
+    /* Find initial vertice */
+    initialPos = this->hashFunctions->hash(query, status);
+    if(status != SUCCESS)
+            return;
+
+    /* Find all neighbors of current vertice */
+    for(i = 0; i < this->tableSize; i++){
+
+        /* Don't check the same position */
+        if(i == initialPos)
+            continue;
+
+        neighborVertices.push_back(neighborVertice(hammingDistance(initialPos, i), i));
+    } // End for
+
+    /* Sort neighborVertices */
+    make_heap(neighborVertices.begin(), neighborVertices.end(), verticesCompare());
+
+    /* Check probes vertices for neighbors */
+    for(i = 0; i < this->probes; i++){
+   
+        /* Check initial pos */
+        if(i == 0)
+            pos = initialPos;
+        /* Extract min pos */
+        else
+            pos = neighborVertices.front().pos;
+
+        /* Empty vertice */
+        if(this->cube[pos].size() == 0)
+            continue;
+
+        /* Scan current vertice */
+        for(iter = this->cube[pos].begin(); iter != this->cube[pos].end(); iter++){  
+
+            numNeighbors += 1;
+            
+            /* Find current distance */
+            currDist = iter->point.euclideanDist(query, status);
+            if(status != SUCCESS)
+                return;
+            
+            /* Keep neighbor */
+            if(currDist < radius){
+                neighborsIndexes.push_back(iter->pos);
                 if(neighborsDistances != NULL)
                     neighborsDistances->push_back(currDist);
             }
@@ -257,8 +356,8 @@ void hypercubeEuclidean::nNeighbor(Item& query, Item& nNeighbor, double* neighbo
     int i, initialPos, pos, found = 0, flag = 0;
     double currDist; // Distance of a point in list
     double minDist = -1;
-    list<Item>::iterator iter;
-    list<Item>::iterator iterNearestNeighbor;
+    list<entry>::iterator iter;
+    list<entry>::iterator iterNearestNeighbor;
     vector<neighborVertice> neighborVertices; // Keep all neighbors  
     int numNeighbors = 0; // Number of neighbors
 
@@ -313,7 +412,7 @@ void hypercubeEuclidean::nNeighbor(Item& query, Item& nNeighbor, double* neighbo
             numNeighbors += 1;
             
             /* Find current distance */
-            currDist = iter->euclideanDist(query, status);
+            currDist = iter->point.euclideanDist(query, status);
             if(status != SUCCESS)
                 return;
             
@@ -344,7 +443,7 @@ void hypercubeEuclidean::nNeighbor(Item& query, Item& nNeighbor, double* neighbo
 
     /* Nearest neighbor found */
     if(found == 1){
-        nNeighbor = *iterNearestNeighbor;
+        nNeighbor = iterNearestNeighbor->point;
         if(neighborDistance != NULL)
             *neighborDistance = minDist;
     }
@@ -416,12 +515,12 @@ unsigned hypercubeEuclidean::size(void){
 
     result += sizeof(this->hashFunctions);
 
-    list<Item>::iterator iter;
+    list<entry>::iterator iter;
 
     for(i = 0; i < this->tableSize; i++){
         for(iter = this->cube[i].begin(); iter!= this->cube[i].end(); iter++){
-            result += iter->size();
-
+            result += iter->point.size();
+            result += sizeof(int);
             result += sizeof(Item);
         } // End for - iter
     } // End for - table size

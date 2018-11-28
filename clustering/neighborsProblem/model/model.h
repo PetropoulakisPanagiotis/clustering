@@ -15,7 +15,8 @@ class model{
 
         /* Finds the neighbors within a given radius of an item */
         virtual void radiusNeighbors(Item& query, int radius, std::list<Item>& neighbors, std::list<double>* neighborsDistances, errorCode& status) = 0;
-        
+        virtual void radiusNeighbors(Item& query, int radius, std::list<int>& neighborsIndexes, std::list<double>* neighborsDistances, errorCode& status) = 0;
+
         /* Find the nearest neighbor of an item */
         virtual void nNeighbor(Item& query, Item& nNeighbor, double* neighborDistance, errorCode& status) =  0;
 

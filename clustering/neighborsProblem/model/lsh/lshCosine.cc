@@ -24,7 +24,7 @@ lshCosine::lshCosine():tableSize(0),n(0),l(5),k(8),dim(0),fitted(0){
 
     /* Set size of hash tables */
     for(i = 0; i < this->l; i++)
-        this->tables.push_back(vector<list<Item*> >(this->l));
+        this->tables.push_back(vector<list<entry> >(this->l));
 }
 
 lshCosine::lshCosine(int k, int l, errorCode& status):tableSize(0),n(0),l(l),k(k),dim(0),fitted(0){
@@ -42,7 +42,7 @@ lshCosine::lshCosine(int k, int l, errorCode& status):tableSize(0),n(0),l(l),k(k
 
         /* Set size of hash tables */
         for(i = 0; i < this->l; i++)
-            this->tables.push_back(vector<list<Item*> >(this->l));
+            this->tables.push_back(vector<list<entry> >(this->l));
     }
 }
 
@@ -65,10 +65,10 @@ lshCosine::~lshCosine(){
 void lshCosine::fit(list<Item>& points, errorCode& status){
     int i, j, p;
     int pos; // Pos(line) in current hash table
+    entry newEntry;
 
     /* Iteratiors */
     list<Item>::iterator iterPoints = points.begin(); // Iterate through points
-    list<Item>::iterator iterTables;  // Iterate through table
    
     status = SUCCESS;
 
@@ -98,7 +98,7 @@ void lshCosine::fit(list<Item>& points, errorCode& status){
     for(i = 0; i < this->l; i++){
         this->tables[i].reserve(this->tableSize);
         for(j = 0; j < this->tableSize; j++)
-            this->tables[i].push_back(list<Item*>());
+            this->tables[i].push_back(list<entry>());
     }
 
     /* Set dimension */
@@ -193,8 +193,12 @@ void lshCosine::fit(list<Item>& points, errorCode& status){
                 break;
             }
 
+            /* Set new entry */
+            newEntry.point = &(this->points[p]);
+            newEntry.pos = p;
+ 
             /* Add point */
-            this->tables[i][pos].push_back(&(this->points[p]));
+            this->tables[i][pos].push_back(newEntry);
         } // End for - Points
 
         if(status != SUCCESS)
@@ -225,10 +229,9 @@ void lshCosine::fit(list<Item>& points, errorCode& status){
 void lshCosine::radiusNeighbors(Item& query, int radius, list<Item>& neighbors, list<double>* neighborsDistances, errorCode& status){
     int i, pos;
     double currDist; // Distance of a point in list
-    list<Item*>::iterator iter;
+    list<entry>::iterator iter;
     unordered_set<string> visited; // Visited points
     string currId;
-    Item *ptrPoint;
 
     status = SUCCESS;
 
@@ -269,12 +272,11 @@ void lshCosine::radiusNeighbors(Item& query, int radius, list<Item>& neighbors, 
         /* Scan list of specific bucket */
         for(iter = this->tables[i][pos].begin(); iter != this->tables[i][pos].end(); iter++){  
 
-            ptrPoint = *iter;
-            currId = ptrPoint->getId();
+            currId = iter->point->getId();
 
                         
             /* Find current distance */
-            currDist = ptrPoint->cosineDist(query, status);
+            currDist = iter->point->cosineDist(query, status);
             if(status != SUCCESS)
                 return;
             
@@ -288,7 +290,80 @@ void lshCosine::radiusNeighbors(Item& query, int radius, list<Item>& neighbors, 
                 else
                     continue;
 
-                neighbors.push_back(*ptrPoint);
+                neighbors.push_back(*(iter->point));
+                if(neighborsDistances != NULL)
+                    neighborsDistances->push_back(currDist);
+            }
+        } // End for - Scan list
+    } // End for - Tables
+}
+
+/* Find the radius neighbors of a given point */
+void lshCosine::radiusNeighbors(Item& query, int radius, list<int>& neighborsIndexes, list<double>* neighborsDistances, errorCode& status){
+    int i, pos;
+    double currDist; // Distance of a point in list
+    list<entry>::iterator iter;
+    unordered_set<string> visited; // Visited points
+    string currId;
+
+    status = SUCCESS;
+
+    /* Check parameters */
+    if(radius < MIN_RADIUS || radius > MAX_RADIUS){
+        status = INVALID_RADIUS;
+        return; 
+    }
+
+    /* Check model */
+    if(this->fitted == 0){
+        status = METHOD_UNFITTED;
+        return;
+    }
+
+    if(this->k == -1){
+        status = INVALID_METHOD;
+        return;
+    }
+
+    /* Clear given lists */
+    neighborsIndexes.clear();
+    if(neighborsDistances != NULL)
+        neighborsDistances->clear();
+
+    /* Scan all tables */
+    for(i = 0; i < this->l; i++){
+    
+        /* Find position in table */
+        pos = this->hashFunctions[i]->hash(query, status);
+        if(status != SUCCESS)
+            return;
+
+        /* Empty list */
+        if(this->tables[i][pos].size() == 0)
+            continue;
+
+        /* Scan list of specific bucket */
+        for(iter = this->tables[i][pos].begin(); iter != this->tables[i][pos].end(); iter++){  
+
+            currId = iter->point->getId();
+
+                        
+            /* Find current distance */
+            currDist = iter->point->cosineDist(query, status);
+            if(status != SUCCESS)
+                return;
+            
+            /* Keep neighbor */
+            if(currDist < radius){
+                /* Not found - add it */
+                if(visited.find(currId) == visited.end()){
+                    visited.insert(currId);
+                }
+                /* Vidited - Discard it */
+                else
+                    continue;
+
+                neighborsIndexes.push_back(iter->pos);
                 if(neighborsDistances != NULL)
                     neighborsDistances->push_back(currDist);
             }
@@ -301,9 +376,8 @@ void lshCosine::nNeighbor(Item& query, Item& nNeighbor, double* neighborDistance
     int i, pos, found = 0, flag = 0;
     double minDist = -1; // Current minimum distance 
     double currDist; // Distance of a point in list
-    list<Item*>::iterator iter;
-    Item* ptrPoint;
-    Item* nearestPtr;
+    list<entry>::iterator iter;
+    list<entry>::iterator iterNearestNeighbor;
 
     status = SUCCESS;
 
@@ -333,10 +407,9 @@ void lshCosine::nNeighbor(Item& query, Item& nNeighbor, double* neighborDistance
         /* Scan list of specific bucket */
         for(iter = this->tables[i][pos].begin(); iter != this->tables[i][pos].end(); iter++){  
 
-            ptrPoint = *iter;
 
             /* Find current distance */
-            currDist = ptrPoint->cosineDist(query, status);
+            currDist = iter->point->cosineDist(query, status);
             if(status != SUCCESS)
                 return;
             
@@ -344,7 +417,7 @@ void lshCosine::nNeighbor(Item& query, Item& nNeighbor, double* neighborDistance
             if(flag == 0){     
 
                 minDist = currDist;
-                nearestPtr = ptrPoint;
+                iterNearestNeighbor = iter;
                 
                 found = 1;
                 flag = 1;
@@ -354,14 +427,14 @@ void lshCosine::nNeighbor(Item& query, Item& nNeighbor, double* neighborDistance
             else if(minDist > currDist){        
                
                 minDist = currDist;
-                nearestPtr = ptrPoint;
+                iterNearestNeighbor = iter;
             }
         } // End for - Scan list
     } // End for - Tables
 
     /* Nearest neighbor found */
     if(found == 1){
-        nNeighbor = *nearestPtr;
+        nNeighbor = *(iterNearestNeighbor->point);
         if(neighborDistance != NULL)
             *neighborDistance = minDist;
     }
@@ -434,12 +507,13 @@ unsigned lshCosine::size(void){
 
     result += sizeof(hashFunctions);
 
-    list<Item*>::iterator iter;
+    list<entry>::iterator iter;
 
     for(i = 0; i < this->l; i++){
         for(j = 0; j < this->tableSize; j++){
             for(iter = this->tables[i][j].begin(); iter != this->tables[i][j].end(); iter++){
                 result += sizeof(Item*);
+                result += sizeof(int);
             } // End for - iter
         } // End for - table size
     } // End for - l

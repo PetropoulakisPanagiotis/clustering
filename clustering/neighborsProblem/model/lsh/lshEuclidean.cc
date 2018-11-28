@@ -88,7 +88,6 @@ void lshEuclidean::fit(list<Item>& points, errorCode& status){
 
     /* Iteratiors */
     list<Item>::iterator iterPoints = points.begin(); // Iterate through points
-    list<entry>::iterator iterEntries;  // Iterate through entries
 
     status = SUCCESS;
 
@@ -225,6 +224,7 @@ void lshEuclidean::fit(list<Item>& points, errorCode& status){
             /* Set new entry */
             newEntry.point = &(this->points[p]);
             newEntry.valueG.assign(newValueG.begin(), newValueG.end());
+            newEntry.pos = p;
 
             /* Add point */
             this->tables[i][pos].push_back(newEntry);
@@ -338,6 +338,93 @@ void lshEuclidean::radiusNeighbors(Item& query, int radius, list<Item>& neighbor
         } // End for - Scan list
     } // End for - Tables
 }
+
+/* Find the radius neighbors of a given point */
+void lshEuclidean::radiusNeighbors(Item& query, int radius, list<int>& neighborsIndexes, list<double>* neighborsDistances, errorCode& status){
+    int i, pos, j;
+    double currDist; // Distance of a point in list
+    list<entry>::iterator iter;
+    unordered_set<string> visited; // Visited points
+    string currId;
+
+    status = SUCCESS;
+
+    /* Check parameters */
+    if(radius < MIN_RADIUS || radius > MAX_RADIUS){
+        status = INVALID_RADIUS;
+        return; 
+    }
+
+    /* Check model */
+    if(this->fitted == 0){
+        status = METHOD_UNFITTED;
+        return;
+    }
+
+    if(this->k == -1){
+        status = INVALID_METHOD;
+        return;
+    }
+
+    /* Clear given lists */
+    neighborsIndexes.clear();
+    if(neighborsDistances != NULL)
+        neighborsDistances->clear();
+
+    /* Scan all tables */
+    for(i = 0; i < this->l; i++){
+    
+        /* Find position in table */
+        pos = this->hashFunctions[i]->hash(query, status);
+        if(status != SUCCESS)
+            return;
+
+        /* Empty list */
+        if(this->tables[i][pos].size() == 0)
+            continue;
+
+        /* Find value g for query */
+        vector<int> valueG;
+        for(j = 0; j < this->k; j++){
+            valueG.push_back(this->hashFunctions[i]->hashSubFunction(query, j, status));
+            if(status != SUCCESS){        
+                this->k = -1;
+                break;
+            }
+        } // End for
+
+        /* Scan list of specific bucket */
+        for(iter = this->tables[i][pos].begin(); iter != this->tables[i][pos].end(); iter++){  
+            
+            currId = iter->point->getId();
+
+            /* Compare values g of query and current point */
+            if(!equal(valueG.begin(), valueG.end(), iter->valueG.begin()))
+                continue;
+
+            /* Find current distance */
+            currDist = iter->point->euclideanDist(query, status);
+            if(status != SUCCESS)
+                return;
+           
+            /* Keep neighbor */
+            if(currDist < radius){
+                /* Not found - add it */
+                if(visited.find(currId) == visited.end()){
+                    visited.insert(currId);
+                }
+                /* Vidited - Discard it */
+                else
+                    continue;
+                
+                neighborsIndexes.push_back(iter->pos);
+                if(neighborsDistances != NULL)
+                    neighborsDistances->push_back(currDist);
+            }
+        } // End for - Scan list
+    } // End for - Tables
+}
+
 
 /* Find the nearest neighbor of a given point */
 void lshEuclidean::nNeighbor(Item& query, Item& nNeighbor, double* neighborDistance, errorCode& status){
@@ -498,6 +585,7 @@ unsigned lshEuclidean::size(void){
 
                 result += iter->valueG.capacity() * sizeof(int);
                 result += sizeof(iter->valueG);
+                result += sizeof(int);
             } // End for - iter
         } // End for - table size
     } // End for - l

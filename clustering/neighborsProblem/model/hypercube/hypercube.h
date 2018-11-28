@@ -29,7 +29,13 @@ class hypercubeEuclidean: public model{
             }
         };
 
-        std::vector<std::list<Item> >  cube;
+        /* Entries in cube */
+        typedef struct entry{
+            Item point; // Use pointer - Save memory
+            int pos; // Position of point
+        }entry;
+
+        std::vector<std::list<entry> >  cube;
         hashFunction* hashFunctions; // Hash function of cube 
         int tableSize;
         int n; // Number of items 
@@ -50,6 +56,7 @@ class hypercubeEuclidean: public model{
         void fit(std::list<Item>& points, errorCode& status);
 
         void radiusNeighbors(Item& query, int radius, std::list<Item>& neighbors, std::list<double>* neighborsDistances, errorCode& status);
+        void radiusNeighbors(Item& query, int radius, std::list<int>& neighborsIndexes, std::list<double>* neighborsDistances, errorCode& status);
         void nNeighbor(Item& query, Item& nNeighbor, double* neighborDistance, errorCode& status);
         
         int getNumberOfPoints(errorCode& status);
@@ -83,7 +90,13 @@ class hypercubeCosine: public model{
             }
         };
 
-        std::vector<std::list<Item> >  cube;
+        /* Entries in cube */
+        typedef struct entry{
+            Item point; // Use pointer - Save memory
+            int pos; // Position of point
+        }entry;
+
+        std::vector<std::list<entry> >  cube;
         hashFunction* hashFunctions; // Hash function of cube 
         int tableSize;
         int n; // Number of items 
@@ -102,6 +115,7 @@ class hypercubeCosine: public model{
         void fit(std::list<Item>& points, errorCode& status);
 
         void radiusNeighbors(Item& query, int radius, std::list<Item>& neighbors, std::list<double>* neighborsDistances, errorCode& status);
+        void radiusNeighbors(Item& query, int radius, std::list<int>& neighborsIndexes, std::list<double>* neighborsDistances, errorCode& status);
         void nNeighbor(Item& query, Item& nNeighbor, double* neighborDistance, errorCode& status);
         
         int getNumberOfPoints(errorCode& status);

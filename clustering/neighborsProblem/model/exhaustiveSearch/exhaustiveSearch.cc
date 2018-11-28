@@ -110,6 +110,51 @@ void exhaustiveSearch::radiusNeighbors(Item& query, int radius, list<Item>& neig
     } // End for
 }
 
+/* Find the radius neighbors of a given point */
+void exhaustiveSearch::radiusNeighbors(Item& query, int radius, list<int>& neighborsIndexes, list<double>* neighborsDistances, errorCode& status){
+    int i;
+    double currDist; // Distance of a point in list
+
+    status = SUCCESS;
+
+    /* Check parameters */
+    if(radius < MIN_RADIUS || radius > MAX_RADIUS){
+        status = INVALID_RADIUS;
+        return; 
+    }
+
+    /* Check model */
+    if(this->fitted == 0){
+        status = METHOD_UNFITTED;
+        return;
+    }
+
+    /* Clear given lists */
+    neighborsIndexes.clear();
+    if(neighborsDistances != NULL)
+        neighborsDistances->clear();
+
+    /* Scann all points */
+    for(i = 0; i < this->tableSize; i++){
+        /* Find current distance */
+
+        if(this->metrice == "euclidean")
+            currDist = this->points[i].euclideanDist(query, status);
+        else 
+            currDist = this->points[i].cosineDist(query, status);
+
+        if(status != SUCCESS)
+            return;
+
+        /* Keep neighbor */
+        if(currDist < radius){
+            neighborsIndexes.push_back(i);
+            if(neighborsDistances != NULL)
+                neighborsDistances->push_back(currDist);
+        }
+    } // End for
+}
+
 /* Find the nearest neighbor of a given point */
 void exhaustiveSearch::nNeighbor(Item& query, Item& nNeighbor, double* neighborDistance, errorCode& status){
     int i, posMin = 0;

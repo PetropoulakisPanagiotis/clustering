@@ -22,6 +22,7 @@ class exhaustiveSearch: public model{
         void fit(std::list<Item>& points, errorCode& status);
 
         void radiusNeighbors(Item& query, int radius, std::list<Item>& neighbors, std::list<double>* neighborsDistances, errorCode& status);
+        void radiusNeighbors(Item& query, int radius, std::list<int>& neighborsIndexes, std::list<double>* neighborsDistances, errorCode& status);
         void nNeighbor(Item& query, Item& nNeighbor, double* neighborDistance, errorCode& status);
         
         int getNumberOfPoints(errorCode& status);
