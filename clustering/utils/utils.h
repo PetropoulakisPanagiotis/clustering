@@ -50,7 +50,8 @@ typedef enum errorCode{
     INVALID_ITER,
     INVALID_CLUSTERS,
     INVALID_ALGO,
-    INVALID_TOL
+    INVALID_TOL,
+    INVALID_CONF
 }errorCode;
 
 ///////////////////////

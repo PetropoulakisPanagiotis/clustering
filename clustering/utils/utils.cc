@@ -284,6 +284,10 @@ void printError(errorCode& status){
         case(INVALID_TOL):
             cout << "Please give an apropriate tolerance[" + to_string(MIN_TOL) + "," + to_string(MAX_TOL) +"]\n";
             break;
+
+        case(INVALID_CONF):
+            cout << "Please give a valid config set\n";
+            break;
     } // End switch
 }
 
