@@ -96,6 +96,7 @@ int cluster::rangeAssign(double& radius, errorCode& status){
 
     status = SUCCESS;
 
+
     /* Check model */
     if(this->fitted == -1 || this->rangeModel == NULL){
         status = INVALID_METHOD;
@@ -191,6 +192,9 @@ int cluster::rangeAssign(double& radius, errorCode& status){
             newObjVal += tmpObjVal;
         }
     } // End for - items
+
+    cout << this->currStateVal << "\n";
+    cout << newObjVal << "\n\n";
 
     /* Check terminate condition */
     if(abs(this->currStateVal - newObjVal) < this->tol)

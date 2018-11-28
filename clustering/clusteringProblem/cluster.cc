@@ -6,6 +6,8 @@
 #include <chrono>
 #include "../utils/utils.h"
 #include "cluster.h"
+#include "../neighborsProblem/model/lsh/lsh.h"
+#include "../neighborsProblem/model/hypercube/hypercube.h"
 
 using namespace std;
 
@@ -125,10 +127,20 @@ cluster::cluster(errorCode& status, list<Item>& items, int numClusters, string i
     else
         this->rangeModel = NULL;
 
+    if(status != SUCCESS)
+        return;
+
     if(assignAlgo != "lloyd" && this->rangeModel == NULL){
         status = ALLOCATION_FAILED;
         return;
     }
+
+    /* Fit model */
+    if(this->rangeModel != NULL)
+        this->rangeModel->fit(items, status);
+    
+    if(status != SUCCESS)
+        return;  
 
     /* Success */
     this->fitted = 0;
@@ -245,12 +257,18 @@ cluster::cluster(errorCode& status, list<Item>& items, int k, int l, int w, floa
         status = INVALID_PARAMETERS;
     else
         this->rangeModel = NULL;
-
+    
+    if(status != SUCCESS)
+        return;
     if(assignAlgo != "lloyd" && this->rangeModel == NULL){
         status = ALLOCATION_FAILED;
         return;
     }
 
+    /* Fit model */
+    if(this->rangeModel != NULL)
+        this->rangeModel->fit(items, status);
+    
     if(status != SUCCESS)
         return;
 
@@ -370,13 +388,20 @@ cluster::cluster(errorCode& status, list<Item>& items, int k, int m, int probes,
     else
         this->rangeModel = NULL;
 
+    if(status != SUCCESS)
+        return;
+
     if(assignAlgo != "lloyd" && this->rangeModel == NULL){
         status = ALLOCATION_FAILED;
         return;
     }
 
+    /* Fit model */
+    if(this->rangeModel != NULL)
+        this->rangeModel->fit(items, status);
+    
     if(status != SUCCESS)
-        return;
+        return;  
 
     /* Success */
     this->fitted = 0;
@@ -422,6 +447,7 @@ void cluster::fit(vector<Item>& clusters, vector<int>& clustersSize, errorCode& 
     /* Error occured */
     if(status != SUCCESS)
         return;
+
 
     ////////////////////////////////////////
     /* Initialize radius for range search */

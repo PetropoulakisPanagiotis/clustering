@@ -57,12 +57,13 @@ int main(int argc, char **argv){
     /* Perform clustering */
     ////////////////////////
 
-    returnVal = runModel(items, complete, outputStream, "random", "lloyd", "k-means", metrice, numClucsters);
+    returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "k-means", metrice, numClucsters);
     if(returnVal == -1){
         outputStream.close();
         return 0;
     }
 
+    /*
     returnVal = runModel(items, complete, outputStream, "random", "lloyd", "pam-lloyd", metrice, numClucsters);
     if(returnVal == -1){
         outputStream.close();
@@ -80,6 +81,8 @@ int main(int argc, char **argv){
         outputStream.close();
         return 0;
     }
+
+    */
 
     cout << "--Expirement is over. Have a good day!--\n";
     outputStream.close();

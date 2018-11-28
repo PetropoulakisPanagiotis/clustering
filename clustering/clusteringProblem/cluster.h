@@ -4,8 +4,6 @@
 #include "../item/item.h"
 #include "../utils/utils.h"
 #include "../neighborsProblem/model/model.h"
-#include "../neighborsProblem/model/lsh/lsh.h"
-#include "../neighborsProblem/model/hypercube/hypercube.h"
 
 /* Class cluster                */
 /* Provided algorithms:         */
