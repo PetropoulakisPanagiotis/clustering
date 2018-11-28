@@ -181,6 +181,8 @@ void Item::divComponent(double newComponent, int index, errorCode& status){
     /* Check parameters */
     if(index < 0 || index >= this->dim)
         status = INVALID_INDEX;
+    else if(newComponent == 0)
+        status = INVALID_PARAMETERS;
     else
         this->components[index] /= newComponent;
 }

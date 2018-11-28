@@ -16,104 +16,17 @@ using namespace std;
 /////////////////////////////////////
 
 /* Init cluster: Check for errors, set items and other members */
+/* Range model: default constructor                            */
 cluster::cluster(errorCode& status, list<Item>& items, int numClusters, string initAlgo, string assignAlgo, string updateAlgo, string metrice, int maxIter, double tol):numClusters(numClusters), maxIter(maxIter), tol(tol), initAlgo(initAlgo), assignAlgo(assignAlgo), updateAlgo(updateAlgo), metrice(metrice){
 
     status = SUCCESS;
 
     this->fitted = -1;
 
-    /* Check parameters */
-    if(numClusters < MIN_CLUSTERS || numClusters > MAX_CLUSTERS){
-        status = INVALID_CLUSTERS;
-        return;
-    }
-
-    if(tol < MIN_TOL || tol > MAX_TOL){
-        status = INVALID_TOL;
-        return;
-    }
-
-    if((items.size() / numClusters) < 5){
-        status = INVALID_CLUSTERS;
-        return; 
-    }
-
-    if(initAlgo != "random" && initAlgo != "k-means++"){
-        status = INVALID_ALGO;
-        return;
-    }
-
-    if(assignAlgo != "lloyd" && assignAlgo != "range-lsh" && assignAlgo != "range-hypercube"){
-        status = INVALID_ALGO;
-        return;
-    }
-
-    if(updateAlgo != "k-means" && updateAlgo != "pam-lloyd"){
-        status = INVALID_ALGO;
-        return;
-    }
-
-    if(metrice != "euclidean" && metrice != "cosine"){
-        status = INVALID_METRICE;
-        return;
-    }
-
-    if(maxIter < MIN_ITER || maxIter > MAX_ITER){
-        status = INVALID_ITER;
-        return;
-    }
-
-    /////////////////
-    /* Set members */
-    /////////////////
-
-    list<Item>::iterator iterItems = items.begin();
-    int i;
-
-    this->currStateVal = -1;
-
-    /* Set distance function */
-    if(metrice == "euclidean")
-        this->distFunc = &euclideanDistance;
-    else
-        this->distFunc = &cosineDistance;
-
-    /* Check dim */
-    this->dim = iterItems->getDim();
-    if(this->dim <= 0 || this->dim > MAX_DIM){
-        status = INVALID_DIM;
-        return;
-    }
-
-    /* Set number of items */
-    this->n = items.size();
-    if(this->n < MIN_POINTS || this->n > MAX_POINTS){
-        status = INVALID_POINTS;
-        return;
-    }
-
-    /* Fix vectors */
-    this->items.reserve(this->n);
-    this->itemsClusters.reserve(this->n);
-    this->clusters.reserve(this->numClusters);
-
-    /* Copy items */
-    for(iterItems = items.begin(); iterItems != items.end(); iterItems++){
-
-        /* Check consistency of dim */
-        if(this->dim != iterItems->getDim()){
-            status = INVALID_POINTS;
-            return;
-        }
-
-        /* Add item */
-        this->items.push_back(*iterItems);
-        this->itemsClusters.push_back(-1);
-    } // End for
-
-    /* Initialize clustersItems vector */
-    for(i = 0; i < this->numClusters; i++)
-        this->clustersItems.push_back(list<int>());
+    /* Check parameters and initialize members items + clusters */
+    fixCluster(status, items, numClusters, initAlgo, assignAlgo, updateAlgo, metrice, maxIter, tol);
+    if(status != SUCCESS)
+       return;
 
     /* Check for range search */
     if(assignAlgo == "range-lsh" && metrice == "euclidean")
@@ -127,124 +40,34 @@ cluster::cluster(errorCode& status, list<Item>& items, int numClusters, string i
     else
         this->rangeModel = NULL;
 
-    if(status != SUCCESS)
-        return;
-
     if(assignAlgo != "lloyd" && this->rangeModel == NULL){
         status = ALLOCATION_FAILED;
         return;
     }
 
     /* Fit model */
-    if(this->rangeModel != NULL)
+    if(this->rangeModel != NULL){
         this->rangeModel->fit(items, status);
-    
-    if(status != SUCCESS)
-        return;  
+        if(status != SUCCESS)
+            return;
+    }
 
     /* Success */
     this->fitted = 0;
 }
 
 /* Init cluster: Check for errors, set items and other members */
+/* Range model: custom constructor - only lsh                  */
 cluster::cluster(errorCode& status, list<Item>& items, int k, int l, int w, float coefficientint, int numClusters, string initAlgo, string assignAlgo, string updateAlgo, string metrice, int maxIter, double tol):numClusters(numClusters), maxIter(maxIter), tol(tol), initAlgo(initAlgo), assignAlgo(assignAlgo), updateAlgo(updateAlgo), metrice(metrice){
 
     status = SUCCESS;
 
     this->fitted = -1;
 
-    /* Check parameters */
-    if(numClusters < MIN_CLUSTERS || numClusters > MAX_CLUSTERS){
-        status = INVALID_CLUSTERS;
-        return;
-    }
-
-    if(tol < MIN_TOL || tol > MAX_TOL){
-        status = INVALID_TOL;
-        return;
-    }
-
-    if((items.size() / numClusters) < 5){
-        status = INVALID_CLUSTERS;
-        return; 
-    }
-
-    if(initAlgo != "random" && initAlgo != "k-means++"){
-        status = INVALID_ALGO;
-        return;
-    }
-
-    if(assignAlgo != "lloyd" && assignAlgo != "range-lsh" && assignAlgo != "range-hypercube"){
-        status = INVALID_ALGO;
-        return;
-    }
-
-    if(updateAlgo != "k-means" && updateAlgo != "pam-lloyd"){
-        status = INVALID_ALGO;
-        return;
-    }
-
-    if(metrice != "euclidean" && metrice != "cosine"){
-        status = INVALID_METRICE;
-        return;
-    }
-
-    if(maxIter < MIN_ITER || maxIter > MAX_ITER){
-        status = INVALID_ITER;
-        return;
-    }
-
-    /////////////////
-    /* Set members */
-    /////////////////
-
-    list<Item>::iterator iterItems = items.begin();
-    int i;
-
-    this->currStateVal = -1;
-
-    /* Set distance function */
-    if(metrice == "euclidean")
-        this->distFunc = &euclideanDistance;
-    else
-        this->distFunc = &cosineDistance;
-
-    /* Check dim */
-    this->dim = iterItems->getDim();
-    if(this->dim <= 0 || this->dim > MAX_DIM){
-        status = INVALID_DIM;
-        return;
-    }
-
-    /* Set number of items */
-    this->n = items.size();
-    if(this->n < MIN_POINTS || this->n > MAX_POINTS){
-        status = INVALID_POINTS;
-        return;
-    }
-
-    /* Fix vectors */
-    this->items.reserve(this->n);
-    this->itemsClusters.reserve(this->n);
-    this->clusters.reserve(this->numClusters);
-
-    /* Copy items */
-    for(iterItems = items.begin(); iterItems != items.end(); iterItems++){
-
-        /* Check consistency of dim */
-        if(this->dim != iterItems->getDim()){
-            status = INVALID_POINTS;
-            return;
-        }
-
-        /* Add item */
-        this->items.push_back(*iterItems);
-        this->itemsClusters.push_back(-1);
-    } // End for
-
-    /* Initialize clustersItems vector */
-    for(i = 0; i < this->numClusters; i++)
-        this->clustersItems.push_back(list<int>());
+    /* Check parameters and initialize members items + clusters */
+    fixCluster(status, items, numClusters, initAlgo, assignAlgo, updateAlgo, metrice, maxIter, tol);
+    if(status != SUCCESS)
+       return;
 
     /* Check for range search */
     if(assignAlgo == "range-lsh" && metrice == "euclidean")
@@ -257,124 +80,38 @@ cluster::cluster(errorCode& status, list<Item>& items, int k, int l, int w, floa
         status = INVALID_PARAMETERS;
     else
         this->rangeModel = NULL;
-    
+
     if(status != SUCCESS)
         return;
+
     if(assignAlgo != "lloyd" && this->rangeModel == NULL){
         status = ALLOCATION_FAILED;
         return;
     }
 
     /* Fit model */
-    if(this->rangeModel != NULL)
-        this->rangeModel->fit(items, status);
-    
-    if(status != SUCCESS)
-        return;
+    if(this->rangeModel != NULL){
+        this->rangeModel->fit(items, status); 
+        if(status != SUCCESS)
+            return;
+    }
 
     /* Success */
     this->fitted = 0;
 }
 
 /* Init cluster: Check for errors, set items and other members */
-cluster::cluster(errorCode& status, list<Item>& items, int k, int m, int probes, int numClusters, string initAlgo, string assignAlgo, string updateAlgo, string metrice, int maxIter, double tol):numClusters(numClusters), maxIter(maxIter), tol(tol), initAlgo(initAlgo), assignAlgo(assignAlgo), updateAlgo(updateAlgo), metrice(metrice){
+/* Range model: custom constructor - only hypercube            */
+cluster::cluster(errorCode& status, list<Item>& items, int k, int m, int probes, int w, int numClusters, string initAlgo, string assignAlgo, string updateAlgo, string metrice, int maxIter, double tol):numClusters(numClusters), maxIter(maxIter), tol(tol), initAlgo(initAlgo), assignAlgo(assignAlgo), updateAlgo(updateAlgo), metrice(metrice){
 
     status = SUCCESS;
 
     this->fitted = -1;
 
-    /* Check parameters */
-    if(numClusters < MIN_CLUSTERS || numClusters > MAX_CLUSTERS){
-        status = INVALID_CLUSTERS;
-        return;
-    }
-
-    if(tol < MIN_TOL || tol > MAX_TOL){
-        status = INVALID_TOL;
-        return;
-    }
-
-    if((items.size() / numClusters) < 5){
-        status = INVALID_CLUSTERS;
-        return; 
-    }
-
-    if(initAlgo != "random" && initAlgo != "k-means++"){
-        status = INVALID_ALGO;
-        return;
-    }
-
-    if(assignAlgo != "lloyd" && assignAlgo != "range-lsh" && assignAlgo != "range-hypercube"){
-        status = INVALID_ALGO;
-        return;
-    }
-
-    if(updateAlgo != "k-means" && updateAlgo != "pam-lloyd"){
-        status = INVALID_ALGO;
-        return;
-    }
-
-    if(metrice != "euclidean" && metrice != "cosine"){
-        status = INVALID_METRICE;
-        return;
-    }
-
-    if(maxIter < MIN_ITER || maxIter > MAX_ITER){
-        status = INVALID_ITER;
-        return;
-    }
-
-    /////////////////
-    /* Set members */
-    /////////////////
-
-    list<Item>::iterator iterItems = items.begin();
-    int i;
-
-    this->currStateVal = -1;
-
-    /* Set distance function */
-    if(metrice == "euclidean")
-        this->distFunc = &euclideanDistance;
-    else
-        this->distFunc = &cosineDistance;
-
-    /* Check dim */
-    this->dim = iterItems->getDim();
-    if(this->dim <= 0 || this->dim > MAX_DIM){
-        status = INVALID_DIM;
-        return;
-    }
-
-    /* Set number of items */
-    this->n = items.size();
-    if(this->n < MIN_POINTS || this->n > MAX_POINTS){
-        status = INVALID_POINTS;
-        return;
-    }
-
-    /* Fix vectors */
-    this->items.reserve(this->n);
-    this->itemsClusters.reserve(this->n);
-    this->clusters.reserve(this->numClusters);
-
-    /* Copy items */
-    for(iterItems = items.begin(); iterItems != items.end(); iterItems++){
-
-        /* Check consistency of dim */
-        if(this->dim != iterItems->getDim()){
-            status = INVALID_POINTS;
-            return;
-        }
-
-        /* Add item */
-        this->items.push_back(*iterItems);
-        this->itemsClusters.push_back(-1);
-    } // End for
-
-    /* Initialize clustersItems vector */
-    for(i = 0; i < this->numClusters; i++)
-        this->clustersItems.push_back(list<int>());
+    /* Check parameters and initialize members items + clusters */
+    fixCluster(status, items, numClusters, initAlgo, assignAlgo, updateAlgo, metrice, maxIter, tol);
+    if(status != SUCCESS)
+       return;
 
     /* Check for range search */
     if(assignAlgo == "range-lsh" && metrice == "euclidean")
@@ -382,7 +119,7 @@ cluster::cluster(errorCode& status, list<Item>& items, int k, int m, int probes,
     else if(assignAlgo == "range-lsh" && metrice == "cosine")
         status = INVALID_PARAMETERS;
     else if(assignAlgo == "range-hypercube" && metrice == "euclidean")
-        this->rangeModel = new hypercubeEuclidean(k, m, probes, status);
+        this->rangeModel = new hypercubeEuclidean(k, m, probes, w, status);
     else if(assignAlgo == "range-hypercube" && metrice == "cosine")
         this->rangeModel = new hypercubeCosine(k, m, probes, status);
     else
@@ -397,20 +134,22 @@ cluster::cluster(errorCode& status, list<Item>& items, int k, int m, int probes,
     }
 
     /* Fit model */
-    if(this->rangeModel != NULL)
+    if(this->rangeModel != NULL){
         this->rangeModel->fit(items, status);
-    
-    if(status != SUCCESS)
-        return;  
+        if(status != SUCCESS)
+            return;  
+    }
 
     /* Success */
     this->fitted = 0;
 }
 
+/* Destructor: delete range model */
 cluster::~cluster(){
     if(this->rangeModel)
         delete this->rangeModel;
 }
+
 /* Perform clustering             */
 /* Return clusters and their size */
 void cluster::fit(vector<Item>& clusters, vector<int>& clustersSize, errorCode& status){
@@ -598,10 +337,18 @@ void cluster::getSilhouette(vector<double>& silhouetteArray, errorCode& status){
         ////////////////////
 
         tmpDouble = b - a;
-        if(a > b)
-            tmpDouble /=  a;
-        else
-            tmpDouble /=  b;
+        if(a > b){
+            if(a != 0)
+                tmpDouble /= a;
+            else
+                tmpDouble = 1;
+        }
+        else{
+            if(b != 0)
+                tmpDouble /= b;
+            else
+                tmpDouble = -1;
+        }
 
         /* Fix s(itemPos) */
         silhouetteArray[this->itemsClusters[itemPos]] += tmpDouble;
@@ -616,6 +363,8 @@ void cluster::getSilhouette(vector<double>& silhouetteArray, errorCode& status){
 
         if(currentClusterSize != 0)
             silhouetteArray[i] /= currentClusterSize;
+        else
+            silhouetteArray[i] = -2; // Empty cluster. BAD K!
     } // End for - silhouette per cluster
 
     /* Fix overall silhouette */

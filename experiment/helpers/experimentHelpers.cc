@@ -11,6 +11,10 @@
 
 using namespace std;
 
+/* Private functions */
+void writeClusters(ofstream& outputStream, vector<Item>& clusters, vector<int>& clustersSize, string& updateAlgo, int numClucsters, errorCode& status);
+void completePrint(ofstream& outputStream, cluster* myCluster, list<Item>& items, int numClusters, errorCode& status);
+
 /* Read arguments from the user */
 /* Arguments provided: 0        */
 /* Invalid arguments: -1        */
@@ -44,12 +48,12 @@ int readArguments(int argc, char **argv,string& inputFile, string& confFile, str
 /* Print results in output file                        */
 /* Success: 0                                          */
 /* Failure: -1                                         */
-int runModel(list<Item>& items, int complete, ofstream& outputStream, string initAlgo, string assignAlgo, string updateAlgo, string& metrice, int numClucsters){
+int runModel(list<Item>& items, int complete, ofstream& outputStream, string initAlgo, string assignAlgo, string updateAlgo, string& metrice, int numClusters){
     vector<double> silhouetteArray;
     vector<Item> clusters; // Keep clusters
     vector<int> clustersSize;
     cluster* myCluster; // Cluster method
-    int i, j;
+    int i;
     int silhouetteArraySize;
     chrono::steady_clock::time_point beginTimer, endTimer; // Measure time
     errorCode status;
@@ -65,7 +69,7 @@ int runModel(list<Item>& items, int complete, ofstream& outputStream, string ini
     //////////////////
 
     beginTimer = chrono::steady_clock::now();
-    myCluster = new cluster(status, items, numClucsters, initAlgo, assignAlgo, updateAlgo, metrice);
+    myCluster = new cluster(status, items, numClusters, initAlgo, assignAlgo, updateAlgo, metrice);
     endTimer = chrono::steady_clock::now();
 
     if(myCluster == NULL){
@@ -106,34 +110,18 @@ int runModel(list<Item>& items, int complete, ofstream& outputStream, string ini
         return -1;
     }
 
+    /* Print statistics of clusters in file */
+    /* Size + id                            */
+    writeClusters(outputStream, clusters, clustersSize, updateAlgo, numClusters, status);
+    if(status != SUCCESS){
+        printError(status);
+        delete myCluster;
+        return -1;
+    }
+
     /* Print elapsed time */
     cout << "Cluster:$ Clusters have been determined[in: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << " sec]\n";
-
-    /* Print statistics of clusters in file */
-    for(i = 0; i < numClucsters; i++){
-        if(updateAlgo == "pam-lloyd")
-            outputStream << "CLUSTER-" << i + 1 << " {size: " << clustersSize[i] << "," << " centroid: " << clusters[i].getId() << "\n";
-
-        else{
-            outputStream << "CLUSTER-" << i + 1 << " {size: " << clustersSize[i] << "," << " centroid: ";
-            outputStream << "[";
-
-            /* Print components of cluster */
-            for(j = 0; j < clusters[i].getDim(); j++){
-                outputStream << clusters[i].getComponent(j, status);
-                if(status != SUCCESS){
-                    printError(status);
-                    delete myCluster;
-                    return -1;
-                }
-
-                if(j != clusters[i].getDim() - 1)
-                    outputStream << ",";
-                else
-                    outputStream << "]}\n";
-            } // End for components
-        }
-    } // End for clusters
+    outputStream << "clustering_time: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << "\n";
 
     cout << "Cluster:$ Calculating silhouette\n";
 
@@ -146,6 +134,7 @@ int runModel(list<Item>& items, int complete, ofstream& outputStream, string ini
 
     if(status != SUCCESS){
         printError(status);
+        delete myCluster;
         return -1;
     }
 
@@ -173,54 +162,13 @@ int runModel(list<Item>& items, int complete, ofstream& outputStream, string ini
     /* Print whole clusters */
     //////////////////////////
     if(complete == 1){
-        vector<vector<string> > clustersItemsStr; // Save each id per item in the coresponding culster
-        list<int> itemsClusters; // Id of cluster for every item
-        list<int>::iterator iterInt;
-        list<Item>::iterator iterItems;
-        int clusterSize;
-
-        /* Initialize strs */
-        for(i = 0; i < numClucsters; i++)
-            clustersItemsStr.push_back(vector<string>());
-
-        /* Get index of cluster for every item */
-        myCluster->predict(itemsClusters, status);
+        completePrint(outputStream, myCluster, items, numClusters, status);
         if(status != SUCCESS){
-           printError(status);
+            printError(status);
             delete myCluster;
             return -1;
         }
-
-        iterInt = itemsClusters.begin();
-
-        /* Scan items and fix str vector */
-        for(iterItems = items.begin(); iterItems != items.end(); iterItems++){
-            clustersItemsStr[*iterInt].push_back(iterItems->getId());
-
-            iterInt++;
-        } // End for - items
-
-        /* Print whole clusters in file */
-        for(i = 0; i < numClucsters; i++){
-            clusterSize = (int)clustersItemsStr[i].size();
-
-            if(clusterSize == 0)
-                outputStream <<  "CLUSTER-" << i << " {}\n";
-            else
-                outputStream <<  "CLUSTER-" << i << " {";
-
-            /* Write items in current cluster */
-            for(j = 0; j < clusterSize; j++){
-
-                outputStream << clustersItemsStr[i][j];
-
-                if(j != clusterSize - 1)
-                    outputStream << ", ";
-                else
-                    outputStream << "}\n";
-            } // End for items in cluster
-        } // End for clusters
-    } // End if complete
+    }
 
     outputStream << "\n";
 
@@ -230,4 +178,82 @@ int runModel(list<Item>& items, int complete, ofstream& outputStream, string ini
 
     return 0;
 };
+
+/* Print size and id of clusters */
+void writeClusters(ofstream& outputStream, vector<Item>& clusters, vector<int>& clustersSize, string& updateAlgo, int numClusters, errorCode& status){
+    int i, j;
+
+    status = SUCCESS;
+
+    for(i = 0; i < numClusters; i++){
+        if(updateAlgo == "pam-lloyd")
+            outputStream << "CLUSTER-" << i + 1 << " {size: " << clustersSize[i] << "," << " centroid: " << clusters[i].getId() << "}\n";
+
+        else{
+            outputStream << "CLUSTER-" << i + 1 << " {size: " << clustersSize[i] << "," << " centroid: ";
+            outputStream << "[";
+
+            /* Print components of cluster */
+            for(j = 0; j < clusters[i].getDim(); j++){
+                outputStream << clusters[i].getComponent(j, status);
+                if(status != SUCCESS)
+                    return;
+
+                if(j != clusters[i].getDim() - 1)
+                    outputStream << ",";
+                else
+                    outputStream << "]}\n";
+            } // End for components
+        }
+    } // End for clusters
+}
+
+/* Print whole clusters in file */
+void completePrint(ofstream& outputStream, cluster* myCluster, list<Item>& items, int numClusters, errorCode& status){
+    vector<vector<string> > clustersItemsStr; // Save each id per item in the coresponding culster
+    list<int> itemsClusters; // Id of cluster for every item
+    list<int>::iterator iterInt;
+    list<Item>::iterator iterItems;
+    int clusterSize;
+    int i, j;
+
+    /* Initialize strs */
+    for(i = 0; i < numClusters; i++)
+        clustersItemsStr.push_back(vector<string>());
+
+    /* Get index of cluster for every item */
+    myCluster->predict(itemsClusters, status);
+    if(status != SUCCESS)
+        return;
+
+    iterInt = itemsClusters.begin();
+
+    /* Scan items and fix str vector */
+    for(iterItems = items.begin(); iterItems != items.end(); iterItems++){
+        clustersItemsStr[*iterInt].push_back(iterItems->getId());
+
+        iterInt++;
+    } // End for - items
+
+    /* Print whole clusters in file */
+    for(i = 0; i < numClusters; i++){
+        clusterSize = (int)clustersItemsStr[i].size();
+
+        if(clusterSize == 0)
+            outputStream <<  "CLUSTER-" << i << " {}\n";
+        else
+            outputStream <<  "CLUSTER-" << i << " {";
+
+        /* Write items in current cluster */
+        for(j = 0; j < clusterSize; j++){
+
+            outputStream << clustersItemsStr[i][j];
+
+            if(j != clusterSize - 1)
+                outputStream << ", ";
+            else
+                outputStream << "}\n";
+        } // End for items in cluster
+    } // End for clusters
+}
 // Petropoulakis Panagiotis

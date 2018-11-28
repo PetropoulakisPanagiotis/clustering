@@ -13,16 +13,16 @@
 #define MIN_L 1
 #define MAX_C 1 // Max coefficient
 #define MIN_C 0.03125 // 1/32
-#define MAX_POINTS 1500000 // Max points that models can handle
-#define MIN_POINTS 100
-#define MAX_RADIUS 150000
+#define MAX_POINTS 2000000 // Max points that models can handle
+#define MIN_POINTS 40
+#define MAX_RADIUS 5000000
 #define MIN_RADIUS 0
 #define MY_MAX_RANDOM 5
 #define MY_MIN_RANDOM -5
-#define MAX_ITER 700 // Max iterations for clustering methods
-#define MIN_ITER 50
+#define MAX_ITER 1500 // Max iterations for clustering methods
+#define MIN_ITER 10
 #define MIN_CLUSTERS 2
-#define MAX_CLUSTERS 600
+#define MAX_CLUSTERS 5000
 #define MIN_TOL 0
 #define MAX_TOL 1
 

@@ -55,15 +55,15 @@ int main(int argc, char **argv){
 
     ////////////////////////
     /* Perform clustering */
+    /* Run all models     */
     ////////////////////////
 
-    returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "k-means", metrice, numClucsters);
+    returnVal = runModel(items, complete, outputStream, "random", "lloyd", "k-means", metrice, numClucsters);
     if(returnVal == -1){
         outputStream.close();
         return 0;
     }
 
-    /*
     returnVal = runModel(items, complete, outputStream, "random", "lloyd", "pam-lloyd", metrice, numClucsters);
     if(returnVal == -1){
         outputStream.close();
@@ -82,7 +82,53 @@ int main(int argc, char **argv){
         return 0;
     }
 
-    */
+    returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "k-means", metrice, numClucsters);
+    if(returnVal == -1){
+        outputStream.close();
+        return 0;
+    }
+
+    returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters);
+    if(returnVal == -1){
+        outputStream.close();
+        return 0;
+    }
+
+    returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "k-means", metrice, numClucsters);
+    if(returnVal == -1){
+        outputStream.close();
+        return 0;
+    }
+
+    returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters);
+    if(returnVal == -1){
+        outputStream.close();
+        return 0;
+    }
+
+    returnVal = runModel(items, complete, outputStream, "random", "range-hypercube", "k-means", metrice, numClucsters);
+    if(returnVal == -1){
+        outputStream.close();
+        return 0;
+    }
+
+    returnVal = runModel(items, complete, outputStream, "random", "range-hypercube", "pam-lloyd", metrice, numClucsters);
+    if(returnVal == -1){
+        outputStream.close();
+        return 0;
+    }
+
+    returnVal = runModel(items, complete, outputStream, "k-means++", "range-hypercube", "k-means", metrice, numClucsters);
+    if(returnVal == -1){
+        outputStream.close();
+        return 0;
+    }
+
+    returnVal = runModel(items, complete, outputStream, "k-means++", "range-hypercube", "pam-lloyd", metrice, numClucsters);
+    if(returnVal == -1){
+        outputStream.close();
+        return 0;
+    }
 
     cout << "--Expirement is over. Have a good day!--\n";
     outputStream.close();

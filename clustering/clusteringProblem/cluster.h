@@ -43,6 +43,7 @@ class cluster{
         void pamLloyd(errorCode& status);
 
         /* Helpers functions */
+        void fixCluster(errorCode& status, std::list<Item>& items, int numClusters, std::string initAlgo, std::string assignAlgo, std::string updateAlgo, std::string metrice, int maxIter, double tol); 
         int myUpperBound(std::vector<std::vector<double> >& x, double val, errorCode& status);
         double findItemAvgDist(int itemPos, int itemClusterPos, std::vector<std::vector<double> >& calculatedDistances, errorCode& status);
         void initRadius(double& radius, errorCode& status);
@@ -50,7 +51,7 @@ class cluster{
     public:
         cluster(errorCode& status, std::list<Item>& items, int numClusters=5, std::string initAlgo="random", std::string assignAlgo="lloyd", std::string updateAlgo="k-means", std::string metrice="euclidean", int maxIter=500, double tol=0.0001);
         cluster(errorCode& status, std::list<Item>& items, int k, int l, int w=400, float coefficient=0.5, int numClusters=5, std::string initAlgo="random", std::string assignAlgo="lloyd", std::string updateAlgo="k-means",std::string metrice="euclidean", int maxIter=500, double tol=0.0001);
-        cluster(errorCode& status, std::list<Item>& items, int k, int m, int preobes, int numClusters=5, std::string initAlgo="random", std::string assignAlgo="lloyd", std::string updateAlgo="k-means",std::string metrice="euclidean", int maxIter=500, double tol=0.0001);
+        cluster(errorCode& status, std::list<Item>& items, int k, int m=9000, int probes=2, int w=400, int numClusters=5, std::string initAlgo="random", std::string assignAlgo="lloyd", std::string updateAlgo="k-means",std::string metrice="euclidean", int maxIter=500, double tol=0.0001);
 
         ~cluster();
 

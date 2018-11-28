@@ -90,6 +90,8 @@ void cluster::pamLloyd(errorCode& status){
     int newMinClusterPos; // New cluster position
     int flag;
     double minDist, tmpDist;
+    vector<vector<double> > calculatedDistances; // Save visited distances
+    int itemDistancesPos, itemCurrentDistancePos; // Iterate through calculated distances
 
     status = SUCCESS;
 
@@ -104,9 +106,17 @@ void cluster::pamLloyd(errorCode& status){
         return;
     }
 
+    /* Initialize calculated distances */
+    for(itemDistancesPos = 0; itemDistancesPos < this->n; itemDistancesPos++){
+        calculatedDistances.push_back(vector<double>());
+
+        for(itemCurrentDistancePos = 0; itemCurrentDistancePos < this->n; itemCurrentDistancePos++){
+            calculatedDistances[itemDistancesPos].push_back(-1);
+        } // End for - Dist(currentItem, xItem)
+    } // End for - Distances for current item
+
     /*  Update each cluster with it's medoid */
     for(clusterPos = 0; clusterPos < this->numClusters; clusterPos++){
-
         flag = 0;
 
         /* Scan all items and keep items in current cluster */
@@ -125,10 +135,21 @@ void cluster::pamLloyd(errorCode& status){
                 if(itemPos == itemSameClusterPos || this->itemsClusters[itemPos] != clusterPos)
                     continue;
 
-                /* Find current distance */
-                tmpDist += this->distFunc(this->items[itemPos], this->clusters[clusterPos], status);
-                if(status != SUCCESS)
-                    return;
+                /* Check calculated distances - Array is symetric */
+                /* Distance have been calculated                  */
+                if(calculatedDistances[itemSameClusterPos][itemPos] != -1){
+                    tmpDist += calculatedDistances[itemSameClusterPos][itemPos];
+                }
+                else{
+
+                    /* Find current distance */
+                    tmpDist += this->distFunc(this->items[itemPos], this->clusters[clusterPos], status);
+                    if(status != SUCCESS)
+                        return;
+
+                    /* Save distance */
+                    calculatedDistances[itemPos][itemSameClusterPos] = tmpDist;
+                }
             } // End for - iitems in same cluster except from x item
 
             /* Fix minimun distance */

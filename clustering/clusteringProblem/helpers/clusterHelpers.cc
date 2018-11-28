@@ -6,6 +6,108 @@
 
 using namespace std;
 
+/* Helper function for constructor */
+/* Check for errors and initialize */ 
+/* some members                    */
+void cluster::fixCluster(errorCode& status, std::list<Item>& items, int numClusters, std::string initAlgo, std::string assignAlgo, std::string updateAlgo, std::string metrice, int maxIter, double tol){
+
+    status = SUCCESS;
+
+    /* Check parameters */
+    if(numClusters < MIN_CLUSTERS || numClusters > MAX_CLUSTERS){
+        status = INVALID_CLUSTERS;
+        return;
+    }
+
+    if(tol < MIN_TOL || tol > MAX_TOL){
+        status = INVALID_TOL;
+        return;
+    }
+
+    if((items.size() / numClusters) < 5){
+        status = INVALID_CLUSTERS;
+        return; 
+    }
+
+    if(initAlgo != "random" && initAlgo != "k-means++"){
+        status = INVALID_ALGO;
+        return;
+    }
+
+    if(assignAlgo != "lloyd" && assignAlgo != "range-lsh" && assignAlgo != "range-hypercube"){
+        status = INVALID_ALGO;
+        return;
+    }
+
+    if(updateAlgo != "k-means" && updateAlgo != "pam-lloyd"){
+        status = INVALID_ALGO;
+        return;
+    }
+
+    if(metrice != "euclidean" && metrice != "cosine"){
+        status = INVALID_METRICE;
+        return;
+    }
+
+    if(maxIter < MIN_ITER || maxIter > MAX_ITER){
+        status = INVALID_ITER;
+        return;
+    }
+
+    /////////////////
+    /* Set members */
+    /////////////////
+
+    list<Item>::iterator iterItems = items.begin();
+    int i;
+
+    this->currStateVal = -1;
+
+    /* Set distance function */
+    if(metrice == "euclidean")
+        this->distFunc = &euclideanDistance;
+    else
+        this->distFunc = &cosineDistance;
+
+    /* Check dim */
+    this->dim = iterItems->getDim();
+    if(this->dim <= 0 || this->dim > MAX_DIM){
+        status = INVALID_DIM;
+        return;
+    }
+
+    /* Set number of items */
+    this->n = items.size();
+    if(this->n < MIN_POINTS || this->n > MAX_POINTS){
+        status = INVALID_POINTS;
+        return;
+    }
+
+    /* Fix vectors */
+    this->items.reserve(this->n);
+    this->itemsClusters.reserve(this->n);
+    this->clusters.reserve(this->numClusters);
+
+    /* Copy items */
+    for(iterItems = items.begin(); iterItems != items.end(); iterItems++){
+
+        /* Check consistency of dim */
+        if(this->dim != iterItems->getDim()){
+            status = INVALID_POINTS;
+            return;
+        }
+
+        /* Add item */
+        this->items.push_back(*iterItems);
+        this->itemsClusters.push_back(-1);
+    } // End for
+
+    /* Initialize clustersItems vector */
+    for(i = 0; i < this->numClusters; i++)
+        this->clustersItems.push_back(list<int>());
+}
+
+
 /* Perform upper bound algorithm like stl's algorithms. Return index of given value */
 /* Given vector must be sorted                                                      */
 /* Form of vector: [[0, 0], [val2, pos2], ...., [valn, posn]                        */
@@ -83,6 +185,12 @@ double cluster::findItemAvgDist(int itemPos, int itemClusterPos, vector<vector<d
         return -1;
     }
 
+    clusterSize = this->clustersItems[itemClusterPos].size();
+
+    /* Emprty cluster */
+    if(clusterSize == 0)
+        return 0;
+
     /* Scan items of give cluster */
     for(iterClusterItems = this->clustersItems[itemClusterPos].begin(); iterClusterItems != this->clustersItems[itemClusterPos].end(); iterClusterItems++){
 
@@ -111,12 +219,11 @@ double cluster::findItemAvgDist(int itemPos, int itemClusterPos, vector<vector<d
         result += tmpDist;
     } // End for items in cluster
 
-    clusterSize = this->clustersItems[itemClusterPos].size();
-
-    /* Fix average distance aka result */
-    if(flag == 1 && clusterSize != 0)
+    /* Fix average distance aka result               */
+    /* FLag == 1: Given item belongs to this cluster */
+    if(flag == 1)
         result /= clusterSize - 1;
-    else if(clusterSize != 0)
+    else
         result /= clusterSize;
 
     return result;
