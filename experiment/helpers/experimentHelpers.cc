@@ -48,7 +48,7 @@ int readArguments(int argc, char **argv,string& inputFile, string& confFile, str
 /* Print results in output file                        */
 /* Success: 0                                          */
 /* Failure: -1                                         */
-int runModel(list<Item>& items, int complete, ofstream& outputStream, string initAlgo, string assignAlgo, string updateAlgo, string& metrice, int numClusters){
+int runModel(list<Item>& items, int complete, ofstream& outputStream, string initAlgo, string assignAlgo, string updateAlgo, string& metrice, int numClusters, int k, int l){
     vector<double> silhouetteArray;
     vector<Item> clusters; // Keep clusters
     vector<int> clustersSize;
@@ -69,7 +69,12 @@ int runModel(list<Item>& items, int complete, ofstream& outputStream, string ini
     //////////////////
 
     beginTimer = chrono::steady_clock::now();
-    myCluster = new cluster(status, items, numClusters, initAlgo, assignAlgo, updateAlgo, metrice);
+    if(assignAlgo == "range-lsh")
+        myCluster = new cluster(status, items, k, l, numClusters, initAlgo, assignAlgo, updateAlgo, metrice);
+    else if(assignAlgo == "range-hypercube")
+        myCluster = new cluster(status, items, k, numClusters, initAlgo, assignAlgo, updateAlgo, metrice);
+    else
+        myCluster = new cluster(status, items, numClusters, initAlgo, assignAlgo, updateAlgo, metrice);
     endTimer = chrono::steady_clock::now();
 
     if(myCluster == NULL){

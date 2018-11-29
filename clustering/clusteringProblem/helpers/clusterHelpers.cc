@@ -6,6 +6,22 @@
 
 using namespace std;
 
+/////////////////////////
+/* Objective functions */
+/////////////////////////
+double getNextObjective1(double prevVal, double dist){
+    double tmp;
+
+    tmp = dist * dist;
+
+    return prevVal + tmp;
+}
+
+double getNextObjective2(double prevVal, double dist){
+    return prevVal + dist;
+}
+
+
 /* Helper function for constructor */
 /* Check for errors and initialize */ 
 /* some members                    */
@@ -68,6 +84,12 @@ void cluster::fixCluster(errorCode& status, std::list<Item>& items, int numClust
         this->distFunc = &euclideanDistance;
     else
         this->distFunc = &cosineDistance;
+
+    /* Set objective function */
+    if(updateAlgo == "k-means")
+        this->objFunc = &getNextObjective1;
+    else
+        this->objFunc = &getNextObjective2;
 
     /* Check dim */
     this->dim = iterItems->getDim();

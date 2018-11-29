@@ -10,7 +10,7 @@
 using namespace std;
 
 int main(int argc, char **argv){
-    int numClucsters = 4;
+    int numClucsters, k, l;
     char delim = ',';
     list<Item> items; // Items in given data set
     int argumentsProvided, returnVal;
@@ -37,14 +37,21 @@ int main(int argc, char **argv){
     /* Read data set */
     beginTimer = chrono::steady_clock::now();
     readDataSet(inputFile, 1, delim, items, status);
+    endTimer = chrono::steady_clock::now();
     if(status != SUCCESS){
         printError(status);
         return 0;
     }
-    endTimer = chrono::steady_clock::now();
 
     /* Print elapsed time for reading the data set */
     cout << "Cluster:$ Items have been determined[in: " << chrono::duration_cast<chrono::microseconds>(endTimer - beginTimer).count() / 1000000.0 << " sec]\n\n";
+
+    /* Read config file */
+    readConf(confFile, numClucsters, k, l, status);
+    if(status != SUCCESS){
+        printError(status);
+        return 0;
+    }
 
     /* Open output file */
     outputStream.open(outputFile, ios::trunc);
@@ -82,49 +89,49 @@ int main(int argc, char **argv){
         return 0;
     }
 
-    returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "k-means", metrice, numClucsters);
+    returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "k-means", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
     }
 
-    returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters);
+    returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
     }
 
-    returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "k-means", metrice, numClucsters);
+    returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "k-means", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
     }
 
-    returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters);
+    returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
     }
 
-    returnVal = runModel(items, complete, outputStream, "random", "range-hypercube", "k-means", metrice, numClucsters);
+    returnVal = runModel(items, complete, outputStream, "random", "range-hypercube", "k-means", metrice, numClucsters, k);
     if(returnVal == -1){
         outputStream.close();
         return 0;
     }
 
-    returnVal = runModel(items, complete, outputStream, "random", "range-hypercube", "pam-lloyd", metrice, numClucsters);
+    returnVal = runModel(items, complete, outputStream, "random", "range-hypercube", "pam-lloyd", metrice, numClucsters, k);
     if(returnVal == -1){
         outputStream.close();
         return 0;
     }
 
-    returnVal = runModel(items, complete, outputStream, "k-means++", "range-hypercube", "k-means", metrice, numClucsters);
+    returnVal = runModel(items, complete, outputStream, "k-means++", "range-hypercube", "k-means", metrice, numClucsters, k);
     if(returnVal == -1){
         outputStream.close();
         return 0;
     }
 
-    returnVal = runModel(items, complete, outputStream, "k-means++", "range-hypercube", "pam-lloyd", metrice, numClucsters);
+    returnVal = runModel(items, complete, outputStream, "k-means++", "range-hypercube", "pam-lloyd", metrice, numClucsters, k);
     if(returnVal == -1){
         outputStream.close();
         return 0;

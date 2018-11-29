@@ -58,7 +58,7 @@ cluster::cluster(errorCode& status, list<Item>& items, int numClusters, string i
 
 /* Init cluster: Check for errors, set items and other members */
 /* Range model: custom constructor - only lsh                  */
-cluster::cluster(errorCode& status, list<Item>& items, int k, int l, int w, float coefficientint, int numClusters, string initAlgo, string assignAlgo, string updateAlgo, string metrice, int maxIter, double tol):numClusters(numClusters), maxIter(maxIter), tol(tol), initAlgo(initAlgo), assignAlgo(assignAlgo), updateAlgo(updateAlgo), metrice(metrice){
+cluster::cluster(errorCode& status, list<Item>& items, int k, int l, int numClusters, string initAlgo, string assignAlgo, string updateAlgo, string metrice, int w, float coefficientint, int maxIter, double tol):numClusters(numClusters), maxIter(maxIter), tol(tol), initAlgo(initAlgo), assignAlgo(assignAlgo), updateAlgo(updateAlgo), metrice(metrice){
 
     status = SUCCESS;
 
@@ -102,7 +102,7 @@ cluster::cluster(errorCode& status, list<Item>& items, int k, int l, int w, floa
 
 /* Init cluster: Check for errors, set items and other members */
 /* Range model: custom constructor - only hypercube            */
-cluster::cluster(errorCode& status, list<Item>& items, int k, int m, int probes, int w, int numClusters, string initAlgo, string assignAlgo, string updateAlgo, string metrice, int maxIter, double tol):numClusters(numClusters), maxIter(maxIter), tol(tol), initAlgo(initAlgo), assignAlgo(assignAlgo), updateAlgo(updateAlgo), metrice(metrice){
+cluster::cluster(errorCode& status, list<Item>& items, int k, int numClusters, string initAlgo, string assignAlgo, string updateAlgo, string metrice, int m, int probes, int w, int maxIter, double tol):numClusters(numClusters), maxIter(maxIter), tol(tol), initAlgo(initAlgo), assignAlgo(assignAlgo), updateAlgo(updateAlgo), metrice(metrice){
 
     status = SUCCESS;
 

@@ -18,6 +18,7 @@ class cluster{
         std::vector<std::list<int> > clustersItems; // Map every cluster with items
         model* rangeModel; // For range search
         double (*distFunc)(Item&, Item&, errorCode&); // Distance function
+        double (*objFunc)(double, double); // Objective function
         int n;
         int dim;
         int numClusters; // Clusters to be created
@@ -29,6 +30,8 @@ class cluster{
         std::string assignAlgo;
         std::string updateAlgo;
         std::string metrice; // Euclidean/cosine
+
+
 
         /* Init functions */
         void randomInit(void);
@@ -50,8 +53,8 @@ class cluster{
 
     public:
         cluster(errorCode& status, std::list<Item>& items, int numClusters=5, std::string initAlgo="random", std::string assignAlgo="lloyd", std::string updateAlgo="k-means", std::string metrice="euclidean", int maxIter=500, double tol=0.0001);
-        cluster(errorCode& status, std::list<Item>& items, int k, int l, int w=400, float coefficient=0.5, int numClusters=5, std::string initAlgo="random", std::string assignAlgo="lloyd", std::string updateAlgo="k-means",std::string metrice="euclidean", int maxIter=500, double tol=0.0001);
-        cluster(errorCode& status, std::list<Item>& items, int k, int m=9000, int probes=2, int w=400, int numClusters=5, std::string initAlgo="random", std::string assignAlgo="lloyd", std::string updateAlgo="k-means",std::string metrice="euclidean", int maxIter=500, double tol=0.0001);
+        cluster(errorCode& status, std::list<Item>& items, int k, int l, int numClusters=5, std::string initAlgo="random", std::string assignAlgo="lloyd", std::string updateAlgo="k-means",std::string metrice="euclidean", int w=500, float coefficient=0.5, int maxIter=500, double tol=0.0001);
+        cluster(errorCode& status, std::list<Item>& items, int k, int numClusters=5, std::string initAlgo="random", std::string assignAlgo="lloyd", std::string updateAlgo="k-means",std::string metrice="euclidean", int m=900, int probes=2, int w=500, int maxIter=500, double tol=0.0001);
 
         ~cluster();
 
@@ -67,4 +70,10 @@ class cluster{
         /* Get id */
         std::string getId(errorCode& status);
 };
+
+/////////////////////////
+/* Objective functions */
+/////////////////////////
+double getNextObjective1(double prevVal, double dist);
+double getNextObjective2(double prevVal, double dist);
 // Petropoulakis Panagiotis

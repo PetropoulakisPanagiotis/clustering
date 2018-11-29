@@ -57,8 +57,7 @@ int cluster::lloydAssign(errorCode& status){
         } // End for - clusters
 
         /* Calculate objective function */
-        tmpObjVal = minDist * minDist;
-        newObjVal += tmpObjVal;
+        newObjVal = this->objFunc(newObjVal, minDist);
 
         /* Assign item to it's nearest cluster */
         this->itemsClusters[itemPos] = minClusterPos;
@@ -184,8 +183,7 @@ int cluster::rangeAssign(double& radius, errorCode& status){
             } // End for - clusters
 
             /* Calculate objective function */
-            tmpObjVal = minDist * minDist;
-            newObjVal += tmpObjVal;
+            newObjVal = this->objFunc(newObjVal, minDist);
 
             /* Assign item to it's nearest cluster */
             this->itemsClusters[itemPos] = minClusterPos;
@@ -209,7 +207,8 @@ int cluster::rangeAssign(double& radius, errorCode& status){
     this->currStateVal = newObjVal;
 
     /* Set radius */
-    radius = radius + 0.05;
+    if(radius + 0.05 <= MAX_RADIUS)
+        radius = radius + 0.05;
 
     return 0;
 }
