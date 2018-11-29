@@ -59,7 +59,7 @@ clean:
 	rm -rf experiment experiment.o experimentHelpers.o utils.o hashFunction.o item.o fileHandler.o lshEuclidean.o lshCosine.o hypercubeEuclidean.o hypercubeCosine.o cluster.o initAlgorithms.o assignAlgorithms.o updateAlgorithms.o clusterHelpers.o
 
 check:
-	valgrind --track-origins=yes --leak-check=full --show-leak-kinds=all --vgdb-error=1 ./experiment -i dataSets/twitter_dataset_small_small.csv -c cluster.conf -o outputFile.txt -d euclidean -complete
+	valgrind --track-origins=yes --leak-check=full --show-leak-kinds=all --vgdb-error=1 ./experiment -i dataSets/twitter_dataset_small.csv -c cluster.conf -o outputFile.txt -d euclidean -complete
 
 run:
 	./experiment -i dataSets/twitter_dataset_small.csv -c cluster.conf -o outputFile.txt -d euclidean -complete

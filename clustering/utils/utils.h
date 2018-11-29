@@ -25,6 +25,8 @@
 #define MAX_CLUSTERS 5000
 #define MIN_TOL 0
 #define MAX_TOL 1
+#define MAX_COEF_RADIUS 100
+#define MIN_COEF_RADIUS 0.001
 
 /* Errors */
 typedef enum errorCode{
@@ -51,7 +53,8 @@ typedef enum errorCode{
     INVALID_CLUSTERS,
     INVALID_ALGO,
     INVALID_TOL,
-    INVALID_CONF
+    INVALID_CONF,
+    INVALID_COEF_RADIUS
 }errorCode;
 
 ///////////////////////

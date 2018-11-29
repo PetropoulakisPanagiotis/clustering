@@ -24,14 +24,13 @@ class cluster{
         int numClusters; // Clusters to be created
         int maxIter;
         double tol; // Tolerance
+        float coefficientRadius;
         double currStateVal; // Evaluate current state of cluster. Curr state represents objective value or something else.
         int fitted; // 1: items fitted, 2: clusters have been determined
         std::string initAlgo; // Init algorithm to be performed
         std::string assignAlgo;
         std::string updateAlgo;
         std::string metrice; // Euclidean/cosine
-
-
 
         /* Init functions */
         void randomInit(void);
@@ -52,9 +51,9 @@ class cluster{
         void initRadius(double& radius, errorCode& status);
 
     public:
-        cluster(errorCode& status, std::list<Item>& items, int numClusters=5, std::string initAlgo="random", std::string assignAlgo="lloyd", std::string updateAlgo="k-means", std::string metrice="euclidean", int maxIter=500, double tol=0.0001);
-        cluster(errorCode& status, std::list<Item>& items, int k, int l, int numClusters=5, std::string initAlgo="random", std::string assignAlgo="lloyd", std::string updateAlgo="k-means",std::string metrice="euclidean", int w=500, float coefficient=0.5, int maxIter=500, double tol=0.0001);
-        cluster(errorCode& status, std::list<Item>& items, int k, int numClusters=5, std::string initAlgo="random", std::string assignAlgo="lloyd", std::string updateAlgo="k-means",std::string metrice="euclidean", int m=900, int probes=2, int w=500, int maxIter=500, double tol=0.0001);
+        cluster(errorCode& status, std::list<Item>& items, int numClusters=5, std::string initAlgo="random", std::string assignAlgo="lloyd", std::string updateAlgo="k-means", std::string metrice="euclidean", int maxIter=500, double tol=0.001);
+        cluster(errorCode& status, std::list<Item>& items, int k, int l, int numClusters=5, std::string initAlgo="random", std::string assignAlgo="lloyd", std::string updateAlgo="k-means", std::string metrice="euclidean", int w=3, float coefficient=0.5, float coefficientRadius=0.7, int maxIter=500, double tol=0.001);
+        cluster(errorCode& status, std::list<Item>& items, int k, int numClusters=5, std::string initAlgo="random", std::string assignAlgo="lloyd", std::string updateAlgo="k-means", std::string metrice="euclidean", int m=900, int probes=5, int w=3, float coefficientRadius=0.7, int maxIter=500, double tol=0.001);
 
         ~cluster();
 

@@ -104,7 +104,7 @@ void cluster::kmeansPlusInit(errorCode& status){
     /* Pick remaining clusters */
     /* Method: partial sums    */
     /////////////////////////////
- 
+
     for(clusterPos = 1; clusterPos < this->numClusters; clusterPos++){
 
         /* Vector of partial sums - Reset                       */

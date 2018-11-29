@@ -297,6 +297,6 @@ void cluster::initRadius(double& radius, errorCode& status){
     } // End for
 
     /* Set radius */
-    radius = minDist;
+    radius = minDist  + (minDist * 0.8);
 }
 // Petropoulakis Panagiotis

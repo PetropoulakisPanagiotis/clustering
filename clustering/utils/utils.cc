@@ -288,6 +288,10 @@ void printError(errorCode& status){
         case(INVALID_CONF):
             cout << "Please give a valid config set\n";
             break;
+
+        case(INVALID_COEF_RADIUS):
+            cout << "Please give an apropriate radius coefficient[" + to_string(MIN_COEF_RADIUS) + "," + to_string(MAX_COEF_RADIUS) +"]\n";
+            break;
     } // End switch
 }
 
