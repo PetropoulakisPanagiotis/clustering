@@ -245,9 +245,9 @@ void completePrint(ofstream& outputStream, cluster* myCluster, list<Item>& items
         clusterSize = (int)clustersItemsStr[i].size();
 
         if(clusterSize == 0)
-            outputStream <<  "CLUSTER-" << i << " {}\n";
+            outputStream <<  "CLUSTER-" << i + 1 << " {}\n";
         else
-            outputStream <<  "CLUSTER-" << i << " {";
+            outputStream <<  "CLUSTER-" << i + 1 << " {";
 
         /* Write items in current cluster */
         for(j = 0; j < clusterSize; j++){
