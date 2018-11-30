@@ -202,7 +202,7 @@ int cluster::rangeAssign(double& radius, errorCode& status){
             newObjVal += tmpObjVal;
         }
     } // End for - items
-
+    this->rangeModel->print();
     cout << "Not ass: " << unassignedItems << "\n";
     cout << "sigrousis: " << itemsInManyClusters  << "\n\n";
 
@@ -219,7 +219,7 @@ int cluster::rangeAssign(double& radius, errorCode& status){
     /* Increase radius up to a point       */
     /* Stop increasing radius if there are */
     /* points in many clusters             */
-    if(nextRadius <= MAX_RADIUS && unassignedItems > 30 &&  ((this->numClusters * this->n) - itemsInManyClusters <= this->n / 2)){
+    if(nextRadius <= MAX_RADIUS && unassignedItems > 30 &&  ((this->numClusters * this->n) - itemsInManyClusters >= this->n)){
         radius = nextRadius;
         cout << "yes\n";
     }

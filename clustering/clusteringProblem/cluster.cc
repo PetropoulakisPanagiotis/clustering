@@ -125,6 +125,8 @@ cluster::cluster(errorCode& status, list<Item>& items, int k, int numClusters, s
         return;
     }
 
+    cout << w << "\n";
+
     /* Check for range search */
     if(assignAlgo == "range-lsh" && metrice == "euclidean")
         status = INVALID_PARAMETERS;
@@ -380,6 +382,7 @@ void cluster::getSilhouette(vector<double>& silhouetteArray, errorCode& status){
     } // End for - silhouette per cluster
 
     /* Fix overall silhouette */
+    cout << silhouetteArray[this->numClusters] << "-" << this->n << "\n";
     silhouetteArray[this->numClusters] /= this->n;
 }
 

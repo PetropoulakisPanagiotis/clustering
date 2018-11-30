@@ -64,7 +64,14 @@ int main(int argc, char **argv){
     /* Perform clustering */
     /* Run all models     */
     ////////////////////////
+    numClucsters = 5;
+    returnVal = runModel(items, complete, outputStream, "random", "range-hypercube", "k-means", metrice, numClucsters, k, l);
+    if(returnVal == -1){
+        outputStream.close();
+        return 0;
+    }
 
+    /*
     numClucsters = 2;
     returnVal = runModel(items, complete, outputStream, "k-means++", "lloyd", "k-means", metrice, numClucsters, k, l);
     if(returnVal == -1){
@@ -79,7 +86,7 @@ int main(int argc, char **argv){
         outputStream.close();
         return 0;
     }
- 
+
     numClucsters = 5;
     returnVal = runModel(items, complete, outputStream, "k-means++", "lloyd", "k-means", metrice, numClucsters, k, l);
     if(returnVal == -1){
@@ -155,7 +162,7 @@ int main(int argc, char **argv){
         outputStream.close();
         return 0;
     }
-
+*/
     /*
     returnVal = runModel(items, complete, outputStream, "random", "lloyd", "k-means", metrice, numClucsters);
     if(returnVal == -1){

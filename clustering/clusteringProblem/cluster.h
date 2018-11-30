@@ -52,8 +52,8 @@ class cluster{
 
     public:
         cluster(errorCode& status, std::list<Item>& items, int numClusters=5, std::string initAlgo="random", std::string assignAlgo="lloyd", std::string updateAlgo="k-means", std::string metrice="euclidean", int maxIter=500, double tol=0.001);
-        cluster(errorCode& status, std::list<Item>& items, int k, int l, int numClusters=5, std::string initAlgo="random", std::string assignAlgo="lloyd", std::string updateAlgo="k-means", std::string metrice="euclidean", int w=3, float coefficient=0.5, float coefficientRadius=0.7, int maxIter=500, double tol=0.001);
-        cluster(errorCode& status, std::list<Item>& items, int k, int numClusters=5, std::string initAlgo="random", std::string assignAlgo="lloyd", std::string updateAlgo="k-means", std::string metrice="euclidean", int m=900, int probes=5, int w=3, float coefficientRadius=0.7, int maxIter=500, double tol=0.001);
+        cluster(errorCode& status, std::list<Item>& items, int k, int l, int numClusters=5, std::string initAlgo="random", std::string assignAlgo="lloyd", std::string updateAlgo="k-means", std::string metrice="euclidean", int w=6, float coefficient=0.5, float coefficientRadius=0.001, int maxIter=500, double tol=0.001);
+        cluster(errorCode& status, std::list<Item>& items, int k, int numClusters=5, std::string initAlgo="random", std::string assignAlgo="lloyd", std::string updateAlgo="k-means", std::string metrice="euclidean", int m=3000, int probes=15, int w=6, float coefficientRadius=5, int maxIter=500, double tol=0.001);
 
         ~cluster();
 

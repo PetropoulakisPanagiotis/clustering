@@ -89,7 +89,7 @@ void cluster::pamLloyd(errorCode& status){
     int itemPos, clusterPos, itemSameClusterPos; // Indexes
     int newMinClusterPos; // New cluster position
     int flag;
-    double minDist, tmpDist;
+    double minDist, tmpDist, currDist;
     vector<vector<double> > calculatedDistances; // Save visited distances
     int itemDistancesPos, itemCurrentDistancePos; // Iterate through calculated distances
 
@@ -132,7 +132,7 @@ void cluster::pamLloyd(errorCode& status){
             for(itemSameClusterPos = 0; itemSameClusterPos < this->n; itemSameClusterPos++){
 
                 /* Do not check current item with it's self */
-                if(itemPos == itemSameClusterPos || this->itemsClusters[itemPos] != clusterPos)
+                if(itemPos == itemSameClusterPos || (this->itemsClusters[itemSameClusterPos] != clusterPos))
                     continue;
 
                 /* Check calculated distances - Array is symetric */
@@ -143,12 +143,14 @@ void cluster::pamLloyd(errorCode& status){
                 else{
 
                     /* Find current distance */
-                    tmpDist += this->distFunc(this->items[itemPos], this->clusters[clusterPos], status);
+                    currDist = this->distFunc(this->items[itemPos], this->items[itemSameClusterPos], status);
                     if(status != SUCCESS)
                         return;
 
+                    tmpDist += currDist;
+
                     /* Save distance */
-                    calculatedDistances[itemPos][itemSameClusterPos] = tmpDist;
+                    calculatedDistances[itemPos][itemSameClusterPos] = currDist;
                 }
             } // End for - iitems in same cluster except from x item
 
@@ -156,6 +158,7 @@ void cluster::pamLloyd(errorCode& status){
             if(flag == 0){
                 minDist = tmpDist;
                 newMinClusterPos = itemPos;
+                flag = 1;
             }
             else if(minDist > tmpDist){
                 minDist = tmpDist;

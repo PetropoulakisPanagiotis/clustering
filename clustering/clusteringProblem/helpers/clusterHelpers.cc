@@ -209,10 +209,6 @@ double cluster::findItemAvgDist(int itemPos, int itemClusterPos, vector<vector<d
 
     clusterSize = this->clustersItems[itemClusterPos].size();
 
-    /* Emprty cluster */
-    if(clusterSize == 0)
-        return 0;
-
     /* Scan items of give cluster */
     for(iterClusterItems = this->clustersItems[itemClusterPos].begin(); iterClusterItems != this->clustersItems[itemClusterPos].end(); iterClusterItems++){
 
@@ -240,6 +236,10 @@ double cluster::findItemAvgDist(int itemPos, int itemClusterPos, vector<vector<d
         /* Increase result */
         result += tmpDist;
     } // End for items in cluster
+
+    /* One item in cluster */
+    if((flag == 1 && clusterSize == 1) || clusterSize == 0)
+        return 0;
 
     /* Fix average distance aka result               */
     /* FLag == 1: Given item belongs to this cluster */
@@ -297,6 +297,6 @@ void cluster::initRadius(double& radius, errorCode& status){
     } // End for
 
     /* Set radius */
-    radius = minDist  + (minDist * 0.8);
+    radius = minDist  + (minDist * 0.75);
 }
 // Petropoulakis Panagiotis
