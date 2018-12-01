@@ -65,22 +65,22 @@ int main(int argc, char **argv){
     /* Run all models     */
     ////////////////////////
     numClucsters = 2;
-    returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
-    }  returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    }  returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
     }
 
     numClucsters = 5;
-    returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
-    }  returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    }  returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
@@ -88,44 +88,44 @@ int main(int argc, char **argv){
 
 
     numClucsters = 10;
-    returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
-    }  returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    }  returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
     }
 
     numClucsters = 20;
-    returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
-    }  returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    }  returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
     }
 
     numClucsters = 30;
-    returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
-    }  returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    }  returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
     }
 
     numClucsters = 40;
-    returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
-    }  returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    }  returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
@@ -133,22 +133,22 @@ int main(int argc, char **argv){
 
     metrice = "cosine";
     numClucsters = 2;
-    returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
-    }  returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    }  returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
     }
 
     numClucsters = 5;
-    returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
-    }  returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    }  returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
@@ -156,49 +156,48 @@ int main(int argc, char **argv){
 
 
     numClucsters = 10;
-    returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
-    }  returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    }  returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
     }
 
     numClucsters = 20;
-    returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
-    }  returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    }  returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
     }
 
     numClucsters = 30;
-    returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
-    }  returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    }  returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
     }
 
     numClucsters = 40;
-    returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
-    }  returnVal = runModel(items, complete, outputStream, "random", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
+    }  returnVal = runModel(items, complete, outputStream, "k-means++", "range-lsh", "pam-lloyd", metrice, numClucsters, k, l);
     if(returnVal == -1){
         outputStream.close();
         return 0;
     }
-
     /*
     returnVal = runModel(items, complete, outputStream, "random", "lloyd", "k-means", metrice, numClucsters);
     if(returnVal == -1){
