@@ -202,7 +202,6 @@ int cluster::rangeAssign(double& radius, errorCode& status){
             newObjVal += tmpObjVal;
         }
     } // End for - items
-    this->rangeModel->print();
     cout << "Not ass: " << unassignedItems << "\n";
     cout << "sigrousis: " << itemsInManyClusters  << "\n\n";
 
