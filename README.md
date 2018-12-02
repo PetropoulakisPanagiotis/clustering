@@ -5,15 +5,15 @@
 </p>
 
 Available methods: 
-* Initialization:
-** random
-** k-means++
-* Assign: 
-** lloyd's
-** range(lsh/hypercube)
-* Update: 
-** k-means
-** pam like lloyd's <br />
+<u>Initialization:</u>
+* random
+* k-means++
+<u>Assign: </u>
+* lloyd's
+* range(lsh/hypercube)
+<u>Update:</u> 
+* k-means
+* pam like lloyd's <br />
 
 Metrices: euclidean and cosine
 
