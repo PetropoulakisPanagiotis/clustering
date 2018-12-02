@@ -28,8 +28,7 @@ Metrices: euclidean and cosine
 git clone https://github.com/PetropoulakisPanagiotis/clustering.git
 ```
 ## Wiki
-* [Tutorial](https://github.com/PetropoulakisPanagiotis/neighbors-problem/wiki/Tutorial)
-* [How it works](https://github.com/PetropoulakisPanagiotis/neighbors-problem/wiki/How-it-works)
+* [Tutorial](https://github.com/PetropoulakisPanagiotis/clustering/wiki/Tutorial)
 
 ## Author
 Petropoulakis Panagiotis petropoulakispanagiotis@gmail.com
