@@ -7,7 +7,7 @@
 #define MAX_W 1000 // Max window size
 #define MIN_W 2
 #define MIN_M 2 // Min searched items in hypercube
-#define MAX_M 1000
+#define MAX_M 5000
 #define MIN_PROBES 1// Min vertices probed  
 #define MAX_L 80 // Max  number of hash tables
 #define MIN_L 1

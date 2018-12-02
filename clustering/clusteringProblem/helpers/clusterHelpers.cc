@@ -40,7 +40,7 @@ void cluster::fixCluster(errorCode& status, std::list<Item>& items, int numClust
         return;
     }
 
-    if((items.size() / numClusters) < 5){
+    if((items.size() / numClusters) > 2){
         status = INVALID_CLUSTERS;
         return; 
     }

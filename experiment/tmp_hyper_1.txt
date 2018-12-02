@@ -1,0 +1,309 @@
+Welcome to clustering problem
+-----------------------------
+
+Cluster:$ Reading data set
+
+Cluster:$ Items have been determined[in: 1.40534 sec]
+
+Cluster:$ Creating model[random/range-hypercube/pam-lloyd/euclidean]
+Cluster:$ Model created[in: 0.043328 sec]
+Cluster:$ Fitting clusters
+Not ass: 4286
+sigrousis: 0
+
+yes
+Not ass: 2000
+sigrousis: 3000
+
+yes
+Not ass: 2000
+sigrousis: 3000
+
+Cluster:$ Clusters have been determined[in: 69.9586 sec]
+Cluster:$ Calculating silhouette
+172.942-5000
+Cluster:$ Silhouette: [0.105343,0.0327593,0.0345884] [in: 22.7031 sec]
+Cluster:$ Deleting cluster
+
+Cluster:$ Creating model[random/range-hypercube/pam-lloyd/euclidean]
+Cluster:$ Model created[in: 0.040473 sec]
+Cluster:$ Fitting clusters
+Not ass: 867
+sigrousis: 0
+
+yes
+Not ass: 2000
+sigrousis: 3000
+
+yes
+Not ass: 2000
+sigrousis: 3000
+
+Cluster:$ Clusters have been determined[in: 59.5653 sec]
+Cluster:$ Calculating silhouette
+-5000-5000
+Cluster:$ Silhouette: [-1,-2,-1] [in: 23.0591 sec]
+Cluster:$ Deleting cluster
+
+Cluster:$ Creating model[random/range-hypercube/pam-lloyd/euclidean]
+Cluster:$ Model created[in: 0.039309 sec]
+Cluster:$ Fitting clusters
+Not ass: 3504
+sigrousis: 566
+
+yes
+Not ass: 1
+sigrousis: 909
+
+Not ass: 1
+sigrousis: 909
+
+Not ass: 1
+sigrousis: 909
+
+Cluster:$ Clusters have been determined[in: 58.6598 sec]
+Cluster:$ Calculating silhouette
+70.9467-5000
+Cluster:$ Silhouette: [0.812753,-0.0185984,-0.00424638,0.0235302,-0.0269979,0.0141893] [in: 19.1808 sec]
+Cluster:$ Deleting cluster
+
+Cluster:$ Creating model[random/range-hypercube/pam-lloyd/euclidean]
+Cluster:$ Model created[in: 0.04037 sec]
+Cluster:$ Fitting clusters
+Not ass: 3712
+sigrousis: 1404
+
+yes
+Not ass: 2000
+sigrousis: 12000
+
+yes
+Not ass: 2000
+sigrousis: 12000
+
+Cluster:$ Clusters have been determined[in: 49.9463 sec]
+Cluster:$ Calculating silhouette
+-67.0875-5000
+Cluster:$ Silhouette: [0.857124,0.141074,-0.0441543,0.138416,0.0648351,-0.0134175] [in: 22.3737 sec]
+Cluster:$ Deleting cluster
+
+Cluster:$ Creating model[random/range-hypercube/pam-lloyd/euclidean]
+Cluster:$ Model created[in: 0.042922 sec]
+Cluster:$ Fitting clusters
+Not ass: 3258
+sigrousis: 4524
+
+yes
+Not ass: 2000
+sigrousis: 27000
+
+yes
+Not ass: 2000
+sigrousis: 27000
+
+yes
+Not ass: 2000
+sigrousis: 27000
+
+yes
+Not ass: 2000
+sigrousis: 27000
+
+Cluster:$ Clusters have been determined[in: 125.282 sec]
+Cluster:$ Calculating silhouette
+53.5793-5000
+Cluster:$ Silhouette: [0.0728245,0.234634,0.0974546,0.174614,0.22419,0.095398,0.329236,0.538682,-0.00465009,0.0602912,0.0107159] [in: 23.1054 sec]
+Cluster:$ Deleting cluster
+
+Cluster:$ Creating model[random/range-hypercube/pam-lloyd/euclidean]
+Cluster:$ Model created[in: 0.04129 sec]
+Cluster:$ Fitting clusters
+Not ass: 2151
+sigrousis: 2119
+
+yes
+Not ass: 429
+sigrousis: 17040
+
+yes
+Not ass: 429
+sigrousis: 17040
+
+yes
+Not ass: 429
+sigrousis: 17040
+
+yes
+Not ass: 429
+sigrousis: 17040
+
+Cluster:$ Clusters have been determined[in: 89.8352 sec]
+Cluster:$ Calculating silhouette
+99.195-5000
+Cluster:$ Silhouette: [0.0475696,0.593005,0.516988,0.0250137,0.005918,-0.0187111,0.600763,0.147974,0.527692,0.544999,0.019839] [in: 22.7993 sec]
+Cluster:$ Deleting cluster
+
+Cluster:$ Creating model[random/range-hypercube/pam-lloyd/euclidean]
+Cluster:$ Model created[in: 0.038567 sec]
+Cluster:$ Fitting clusters
+Not ass: 3160
+sigrousis: 1546
+
+yes
+Not ass: 57
+sigrousis: 23764
+
+yes
+Not ass: 57
+sigrousis: 23764
+
+yes
+Not ass: 57
+sigrousis: 23764
+
+Cluster:$ Clusters have been determined[in: 31.2743 sec]
+Cluster:$ Calculating silhouette
+81.06-5000
+Cluster:$ Silhouette: [0.145767,0.194284,0.100063,0.0683605,0.147475,0.489332,0.0521275,0.847773,0.175859,0.124987,0.231011,0.0397654,-0.0480647,-0.0351826,0.193613,-0.0411421,0.0872988,0.116966,0.0154501,0.329765,0.016212] [in: 13.8953 sec]
+Cluster:$ Deleting cluster
+
+Cluster:$ Creating model[random/range-hypercube/pam-lloyd/euclidean]
+Cluster:$ Model created[in: 0.042885 sec]
+Cluster:$ Fitting clusters
+Not ass: 3425
+sigrousis: 4090
+
+yes
+Not ass: 980
+sigrousis: 46080
+
+yes
+Not ass: 980
+sigrousis: 46080
+
+yes
+Not ass: 980
+sigrousis: 46080
+
+Cluster:$ Clusters have been determined[in: 35.7522 sec]
+Cluster:$ Calculating silhouette
+145.052-5000
+Cluster:$ Silhouette: [0.183265,-0.0546662,0.0792673,0.872779,0.103365,0.149705,0.0576491,0.0318134,0.0495644,0.0711356,0.0791586,0.0515978,0.0584542,0.106938,0.00486092,0.145334,0.0485969,0.233041,0.121439,0.0857761,0.0290105] [in: 16.3881 sec]
+Cluster:$ Deleting cluster
+
+Cluster:$ Creating model[random/range-hypercube/pam-lloyd/euclidean]
+Cluster:$ Model created[in: 0.039532 sec]
+Cluster:$ Fitting clusters
+Not ass: 1574
+sigrousis: 8454
+
+yes
+Not ass: 74
+sigrousis: 63131
+
+yes
+Not ass: 74
+sigrousis: 63131
+
+yes
+Not ass: 74
+sigrousis: 63131
+
+yes
+Not ass: 74
+sigrousis: 63131
+
+Cluster:$ Clusters have been determined[in: 55.5537 sec]
+Cluster:$ Calculating silhouette
+117.932-5000
+Cluster:$ Silhouette: [0.625592,-0.0054016,0.0701544,0.148006,0.427559,-0.0333968,0.107104,0.182911,0.141088,0.272323,0.164004,0.148229,0.645922,0.0764755,0.280671,0.440846,0.460751,0.163277,0.2335,0.184233,0.0777579,0.179179,0.19479,0.0132496,0.136449,-0.0608302,0.365352,0.197274,-0.0187608,0.164599,0.0235865] [in: 18.8268 sec]
+Cluster:$ Deleting cluster
+
+Cluster:$ Creating model[random/range-hypercube/pam-lloyd/euclidean]
+Cluster:$ Model created[in: 0.042745 sec]
+Cluster:$ Fitting clusters
+Not ass: 5000
+sigrousis: 0
+
+yes
+Not ass: 5000
+sigrousis: 0
+
+yes
+Not ass: 5000
+sigrousis: 0
+
+yes
+Not ass: 5000
+sigrousis: 0
+
+yes
+Not ass: 5000
+sigrousis: 0
+
+yes
+Not ass: 5000
+sigrousis: 0
+
+Cluster:$ Clusters have been determined[in: 137.741 sec]
+Cluster:$ Calculating silhouette
+4.29212-5000
+Cluster:$ Silhouette: [0.0740884,0.138124,0.0943154,0.134952,0.221051,0.366568,0.136235,0.816041,0.137988,-0.0502305,0.221842,1,0.141743,0.267553,0.153158,0.376392,-1,-2,0.282557,0.0694662,0.320532,0.594626,0.0690456,0.133804,0.224573,0.540425,0.0664401,0.168868,0.0966578,0.129644,0.000858424] [in: 20.9797 sec]
+Cluster:$ Deleting cluster
+
+Cluster:$ Creating model[random/range-hypercube/pam-lloyd/euclidean]
+Cluster:$ Model created[in: 0.039458 sec]
+Cluster:$ Fitting clusters
+Not ass: 2110
+sigrousis: 6377
+
+yes
+Not ass: 8
+sigrousis: 49088
+
+Not ass: 8
+sigrousis: 49088
+
+Not ass: 8
+sigrousis: 49088
+
+Not ass: 8
+sigrousis: 49088
+
+Not ass: 8
+sigrousis: 49088
+
+Cluster:$ Clusters have been determined[in: 37.2364 sec]
+Cluster:$ Calculating silhouette
+143.208-5000
+Cluster:$ Silhouette: [0.148052,0.941795,0.473211,0.0911045,0.0387608,0.242429,-0.0219602,-0.0529056,0.128245,0.209487,0.0676109,0.0134154,0.154824,0.222858,0.331848,0.495231,0.670321,0.996172,0.0635246,0.413402,0.765775,0.792313,0.148718,0.0827539,0.420149,0.128685,0.0406681,0.0927393,0.151471,0.1341,0.00535689,0.121493,0.623059,0.121279,0.220445,0.2577,0.415223,0.141634,0.177092,-0.0637066,0.0286416] [in: 13.6983 sec]
+Cluster:$ Deleting cluster
+
+Cluster:$ Creating model[random/range-hypercube/pam-lloyd/euclidean]
+Cluster:$ Model created[in: 0.039993 sec]
+Cluster:$ Fitting clusters
+Not ass: 5000
+sigrousis: 0
+
+yes
+Not ass: 5000
+sigrousis: 0
+
+yes
+Not ass: 5000
+sigrousis: 0
+
+yes
+Not ass: 5000
+sigrousis: 0
+
+yes
+Not ass: 5000
+sigrousis: 0
+
+Cluster:$ Clusters have been determined[in: 114.817 sec]
+Cluster:$ Calculating silhouette
+-3853.17-5000
+Cluster:$ Silhouette: [0.102294,0.102768,0.996198,0.405555,0.259389,0.158338,0.18582,0.448582,0.588575,0.27372,0.245538,0.20824,0.230189,0.105601,0.318216,0.150168,-1,-2,0.147577,0.600885,0.1993,0.122212,0.136578,0.290121,0.384036,-1,-2,0.51124,0.125211,0.0782338,0.374118,-1,-2,0.607119,0.297693,0.145058,0.126436,-1,-2,0.528078,-0.770633] [in: 21.5374 sec]
+Cluster:$ Deleting cluster
+

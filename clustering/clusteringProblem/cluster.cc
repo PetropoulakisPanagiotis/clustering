@@ -125,8 +125,6 @@ cluster::cluster(errorCode& status, list<Item>& items, int k, int numClusters, s
         return;
     }
 
-    cout << w << "\n";
-
     /* Check for range search */
     if(assignAlgo == "range-lsh" && metrice == "euclidean")
         status = INVALID_PARAMETERS;
