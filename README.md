@@ -1,7 +1,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ## Clustering
 <p align="left">
-<img src="https://cssanalytics.files.wordpress.com/2013/11/cluster-image.png" width="480px" height="235px"> <br /> <br />
+<img src="https://cssanalytics.files.wordpress.com/2013/11/cluster-image.png" width="480px" height="255px"> <br /> <br />
 </p>
 
 Available methods: 
