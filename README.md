@@ -7,10 +7,10 @@
 Available methods: <br />
 <strong>Initialization:</strong><br />
 * random
-* k-means++
+* k-means++<br />
 <strong>Assign: </strong><br />
 * lloyd's
-* range(lsh/hypercube)
+* range(lsh/hypercube)<br />
 <strong>Update:</strong><br />
 * k-means
 * pam like lloyd's <br />
