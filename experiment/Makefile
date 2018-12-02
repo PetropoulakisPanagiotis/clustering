@@ -62,4 +62,4 @@ check:
 	valgrind --track-origins=yes --leak-check=full --show-leak-kinds=all --vgdb-error=1 ./experiment -i dataSets/twitter_dataset_small.csv -c cluster.conf -o outputFile.txt -d euclidean -complete
 
 run:
-	./experiment -i dataSets/twitter_dataset_small.csv -c cluster.conf -o outputFile.txt -d euclidean > huge.txt # -complete 
+	./experiment -i dataSets/twitter_dataset_small.csv -c cluster.conf -o outputFile.txt -d euclidean
