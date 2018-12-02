@@ -4,14 +4,14 @@
 <img src="https://cssanalytics.files.wordpress.com/2013/11/cluster-image.png" width="440px" height="320px"> <br /> <br />
 </p>
 
-Available methods: 
-<strong>Initialization:</strong>
+Available methods: <br />
+<strong>Initialization:</strong><br />
 * random
 * k-means++
-<u>Assign: </u>
+<strong>Assign: </strong><br />
 * lloyd's
 * range(lsh/hypercube)
-<u>Update:</u> 
+<strong>Update:</strong><br />
 * k-means
 * pam like lloyd's <br />
 
