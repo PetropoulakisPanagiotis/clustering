@@ -5,7 +5,7 @@
 </p>
 
 Available methods: 
-<u>Initialization:</u>
+<strong>Initialization:</strong>
 * random
 * k-means++
 <u>Assign: </u>
