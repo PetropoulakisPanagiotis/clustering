@@ -19,7 +19,7 @@ void cluster::randomInit(void){
     default_random_engine generator(seed);
 
     /* Set distribution */
-    uniform_int_distribution<int> uniformDist(0, this->n); // [0, n)
+    uniform_int_distribution<int> uniformDist(0, this->n - 1); // [0, n)
 
     /* Do not pick same cluster twice */
     unordered_set<int> visited;
@@ -62,7 +62,7 @@ void cluster::kmeansPlusInit(errorCode& status){
     unordered_set<int>::iterator iterVisited;
 
     /* Set distribution */
-    uniform_int_distribution<int> uniformDist(0, this->n);
+    uniform_int_distribution<int> uniformDist(0, this->n - 1);
 
     int clusterPos = 0, itemPos = 0, newClusterPos = 0;
     double currDist = 0, minDist = 0, tmpDouble = 0, randomDouble = 0;
