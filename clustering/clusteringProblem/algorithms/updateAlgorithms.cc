@@ -87,8 +87,8 @@ void cluster::kmeans(errorCode& status){
 /* Update: pam like lloyd's algorithm                          */
 /* New cluster: minimizes the overall distance from every item */
 void cluster::pamLloyd(errorCode& status){
-    int itemPos, clusterPos, itemSameClusterPos; // Indexes
-    int newMinClusterPos; // New cluster position
+    int itemPos, clusterPos = 0, itemSameClusterPos; // Indexes
+    int newMinClusterPos = 0; // New cluster position
     int flag, flagSize;
     int clusterSize; // Size of current cluster(-1)
     double minDist, tmpDist, currDist;
@@ -113,6 +113,7 @@ void cluster::pamLloyd(errorCode& status){
         flag = 0;
         flagSize = 0;
         clusterSize = 0;
+        newMinClusterPos = -1;
 
         /* Scan all items and keep items in current cluster */
         for(itemPos = 0; itemPos < this->n; itemPos++){
@@ -146,7 +147,7 @@ void cluster::pamLloyd(errorCode& status){
                 flagSize = 1;
                 /* Only one or zero items in cluster */
                 if(clusterSize == 0)
-                    continue;
+                    break;
             }
 
             /* Fix average dist */
@@ -165,7 +166,8 @@ void cluster::pamLloyd(errorCode& status){
         } // End for - items(x)
 
         /* Set new medoid */
-        this->clusters[clusterPos] = this->items[newMinClusterPos];
+        if(newMinClusterPos != -1)
+            this->clusters[clusterPos] = this->items[newMinClusterPos];
     } // End for clusters
 }
 // Petropoulakis Panagiotis
