@@ -10,7 +10,7 @@
 | K-Means++       | Range(lsh/hypercube)  | Pam like lloyd's | 
 
 Metrices: euclidean and cosine
-
+Also refer to [nearest-neighbor-search repository](https://github.com/PetropoulakisPanagiotis/nearest-neighbor-search)
 ## Installation
 Clone this repository to your local machine: 
 ```
