@@ -7,7 +7,7 @@
 | Initialization  | Assignment    | Update        | 
 | --------------  | ----------    | ------ | 
 | Random          | Lloyd's       | K-Means       | 
-| K-Means++       | Range(lsh/hypercube)  | Pam like lloyd's | 
+| K-Means++       | Range(lsh/hypercube)  | PAM | 
 
 Note: refer also to [nearest-neighbor-search repository](https://github.com/PetropoulakisPanagiotis/nearest-neighbor-search)
 
