@@ -6,7 +6,7 @@
 ## Available methods:
 | Initialization  | Assignment    | Update        | 
 | --------------  | ----------    | ------ | 
-| Random          | Lloyd's       | k-means       | 
+| Random          | Lloyd's       | K-Means       | 
 | K-Means++       | Range(lsh/hypercube)  | Pam like lloyd's | 
 
 Note: refer also to [nearest-neighbor-search repository](https://github.com/PetropoulakisPanagiotis/nearest-neighbor-search)
