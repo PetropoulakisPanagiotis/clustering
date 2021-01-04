@@ -7,9 +7,9 @@
 | Initialization  | Assignment    | Update Centroids      | 
 | --------------  | ----------    | ---------------- | 
 | Random          | Lloyd's       | K-Means       | 
-| K-Means++       | Range(lsh/hypercube)  | PAM | 
+| K-Means++       | Range | PAM | 
 
-Note: refer also to [nearest-neighbor-search repository](https://github.com/PetropoulakisPanagiotis/nearest-neighbor-search)
+Note: For the range assignment(lsh/hypercube)  refer also to [nearest-neighbor-search repository](https://github.com/PetropoulakisPanagiotis/nearest-neighbor-search)
 
 ## Installation
 Clone this repository to your local machine: 
