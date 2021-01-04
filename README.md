@@ -2,6 +2,7 @@
 ## Clustering
 <p align="center">
 <img src="https://cssanalytics.files.wordpress.com/2013/11/cluster-image.png" width="440px" height="320px"></p>
+
 ## Available methods:
 <strong>Initialization:</strong><br />
 * random
