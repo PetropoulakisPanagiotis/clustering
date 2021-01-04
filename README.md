@@ -4,8 +4,8 @@
 <img src="https://cssanalytics.files.wordpress.com/2013/11/cluster-image.png" width="440px" height="320px"></p>
 
 ## Available methods:
-| Initialization  | Assignment    | Update        | 
-| --------------  | ----------    | ------ | 
+| Initialization  | Assignment    | Update Centroids      | 
+| --------------  | ----------    | ---------------- | 
 | Random          | Lloyd's       | K-Means       | 
 | K-Means++       | Range(lsh/hypercube)  | PAM | 
 
