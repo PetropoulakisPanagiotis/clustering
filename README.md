@@ -4,7 +4,7 @@
 <img src="https://cssanalytics.files.wordpress.com/2013/11/cluster-image.png" width="440px" height="320px"></p>
 
 ## Available methods:
-| Initialization  | assignment    | Update        | 
+| Initialization  | Assignment    | Update        | 
 | --------------  | ----------    | ------ | 
 | Random          | Lloyd's       | k-means       | 
 | K-Means++       | Range(lsh/hypercube)  | Pam like lloyd's | 
