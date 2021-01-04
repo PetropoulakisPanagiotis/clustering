@@ -20,7 +20,7 @@
 Metrices: euclidean and cosine
 
 ## Installation
-* Clone this repository to your local machine: 
+Clone this repository to your local machine: 
 ```
 git clone https://github.com/PetropoulakisPanagiotis/clustering.git
 ```
