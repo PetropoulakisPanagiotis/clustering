@@ -9,7 +9,7 @@
 | Random          | Lloyd's       | K-Means       | 
 | K-Means++       | Range | PAM | 
 
-Note: For the range assignment(LSH/Hypercube) refer also to [nearest-neighbor-search](https://github.com/PetropoulakisPanagiotis/nearest-neighbor-search) repository.
+Note: as for the range assignment (LSH/Hypercube), please refer also to [nearest-neighbor-search](https://github.com/PetropoulakisPanagiotis/nearest-neighbor-search) repository.
 
 ## Installation
 Clone this repository to your local machine: 
